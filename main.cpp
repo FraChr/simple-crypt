@@ -4,13 +4,13 @@
 #include <string>
 #include <vector>
 
-#include "crypto.h"
+
 #include <unistd.h>
 
 #include "ArgsHandler.h"
 
 
-int main(int argc, char *argv[]) {
+int main(const int argc, char *argv[]) {
 
     /*static option long_options[] = {
         {"arg", no_argument, 0, 'a'},
@@ -30,7 +30,8 @@ int main(int argc, char *argv[]) {
         }
     }*/
 
-    ArgsHandler::Handle(argc, argv);
+    ArgsHandler argsHandler;
+    argsHandler.Handle(argc, argv);
 
     /*const auto args = std::vector<std::string>(argv + 1, argv + argc);
     crypto app;

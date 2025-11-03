@@ -2,5 +2,5 @@
 
 class ArgsHandler {
     public:
-    static void Handle(const int &argc, char *argv[]);
+        void Handle(const int &argc, char *argv[]);
 };
