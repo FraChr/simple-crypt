@@ -20,4 +20,11 @@ bool FileHandler::fileExists() const {
     return std::filesystem::exists(_fileName);
 }
 
+std::string FileHandler::readFromFile() {
+    std::string result;
+    std::ifstream file(_fileName);
+    std::getline(file, result);
+    return result;
+}
+
 

@@ -8,7 +8,6 @@
 
 #include "Data/UI/ErrorText.h"
 #include "Data/UI/UiText.h"
-#include "FileHandling/FileHandler.h"
 #include "POD/File.h"
 #include "commands/Commands.h"
 
@@ -23,40 +22,29 @@ void pr(const char *value) {
     }
 }
 
-
 void ArgsHandler::Handle(const int &argc, char *argv[]) {
     std::string commandName;
+    CommandType commandType{};
     FileInfo file;
 
-    std::map<char, std::function<void()>> handlers;
-    // c for crypting needs to take password
-    handlers['c'] = [&commandName] {commandName = optarg;};
-    handlers['v'] = [&commandName] {commandName = optarg;};
-    handlers['h'] = [&]{std::cout <<  outputValues::help;};
-    /*handlers['f'] = [&file] {file.fileName = optarg;};*/
-    handlers['p'] = [&file] {file.password = optarg;};
-
-    handlers[':'] = [] {std::cout << "needs a value\n"; };
-    handlers['?'] = [] {std::cout << "unknown command\n"; };
-
-    /*handlers['d'] = []{std::cout << outputValues::draw << std::endl; };*/
-    /*handlers['d'] = []{pr(optarg);};*/
+    auto handlers = CreateHandlers(commandType, file);
 
 
     int opt = 0;
-    while ((opt = getopt(argc, argv, "c:f:p:d:hv:")) != -1) {
-        if (handlers.contains(opt)) handlers[opt]();
+    while ((opt = getopt(argc, argv, options)) != -1) {
+        auto op = static_cast<ArgsHandler::Option>(opt);
+        if (handlers.contains(op))
+            handlers[op](optarg);
         else {
             std::cerr << "unknown option " << opt;
         }
     }
 
-    if (!commandName.empty()) {
-        if (Commands::commands.contains(commandName)) {
-            Commands::commands[commandName](file);
-        } else {
-            std::cerr << "Unknown command: " << commandName;
-        }
+    Commands com;
+
+    const auto iterator = com.commands.find(commandType);
+    if (commandType != CommandType::NONE) {
+        iterator->second(file);
     }
 
         // for debuging remove for production
@@ -64,3 +52,23 @@ void ArgsHandler::Handle(const int &argc, char *argv[]) {
             std::cout << "extra args: " << argv[optind] << '\n';
         }
 }
+
+std::map<ArgsHandler::Option, std::function<void(const char*)>> ArgsHandler::CreateHandlers(CommandType& ct, FileInfo& file) {
+    std::map<Option, std::function<void(const char*)>> handlers;
+    handlers[Option::C] = [&ct](const char*) {ct = CommandType::CRYPT;};
+    handlers[Option::V] = [&ct](const char*) {ct = CommandType::HASH;};
+    handlers[Option::H] = [&](const char*){std::cout <<  outputValues::help;};
+    handlers[Option::P] = [&file](const char* arg) {file.password = optarg;};
+    handlers[Option::F] = [&file](const char* arg) {file.fileName = optarg;};
+    handlers[Option::D] = [](const char*) {std::cout << outputValues::draw;};
+
+    handlers[Option::MissingArgumentError] = [](const char*) {std::cout << "needs a value\n"; };
+    handlers[Option::UnknownOptionError] = [](const char*) {std::cout << "unknown command\n"; };
+
+    return handlers;
+}
+
+
+
+
+

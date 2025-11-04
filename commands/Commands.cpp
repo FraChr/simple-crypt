@@ -12,23 +12,51 @@
 
 
 
-void hashAndStorePassword(const FileInfo& file);
+/*
+void hashAndStorePassword(FileInfo& file);
 void crypt(FileInfo& file);
-std::string hash(const FileInfo& file);
+std::string hash(std::string password);
+*/
 
 
-std::map<std::string, CommandFunc> Commands::commands = {
-    {"crypt", crypt},
-    {"hash", hashAndStorePassword}
-};
+Commands::Commands() {
+    commands[HASH] = [this](FileInfo& file){hashAndStorePassword(file);};
+    commands[CRYPT] = [this](FileInfo& file){crypt(file);};
+}
 
-void hashAndStorePassword(const FileInfo& file) {
-    const std::string hexHash = hash(file);
+bool Commands::validPassword(const FileInfo &file) {
+    std::string passwordFile = ".secrets";
+    FileHandler f(passwordFile);
+    auto hashedPass = hash(file.password);
+    std::string original = f.readFromFile();
+    if (hashedPass == original) {
+        return true;
+    }
+    return false;
+}
+
+/*std::map<CommandType, CommandFunc> commands = {
+    {HASH, hashAndStorePassword},
+    {CRYPT, crypt}
+};*/
+
+void Commands::hashAndStorePassword(FileInfo& file) {
+    file.fileName = ".secrets";
+    std::cout << "password entered is " << file.password << std::endl;
+    const std::string hexHash = hash(file.password);
     FileHandler tofile(file.fileName);
     tofile.writeToFile(hexHash);
 }
 
-void crypt(FileInfo& file) {
+void Commands::crypt(FileInfo& file) {
+    FileHandler f(file.fileName);
+    bool validateKey = validPassword(file);
+    if (f.fileExists() && validateKey) {
+        std::cout << "crypting file..." << std::endl;   
+    }else {
+        std::cerr << "file not exist\n";
+    }
+
     /*file.passwordHashed = hexHash.str();*/
 
     /*FileHandler tofile(file.fileName);
@@ -36,9 +64,11 @@ void crypt(FileInfo& file) {
      tofile.writeToFile(hexHash.str());*/
 }
 
-std::string hash(const FileInfo& file) {
+
+
+std::string Commands::hash(std::string password) {
     unsigned char hashLength [SHA512_DIGEST_LENGTH];
-    SHA512(reinterpret_cast<const unsigned char*>(file.password.c_str()), file.password.size(), hashLength);
+    SHA512(reinterpret_cast<const unsigned char*>(password.c_str()), password.size(), hashLength);
 
     std::ostringstream hexHash;
     for (const auto i : hashLength) {
@@ -46,3 +76,5 @@ std::string hash(const FileInfo& file) {
     }
     return hexHash.str();
 }
+
+

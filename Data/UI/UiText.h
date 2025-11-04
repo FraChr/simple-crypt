@@ -11,6 +11,7 @@ struct outputValues {
 
     static constexpr std::string_view help = R"(
         -c [string arg] to crypt string
+        -v [hash] -p [enter password] to hash password
     )";
 
     static constexpr std::string_view draw = R"(

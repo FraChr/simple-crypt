@@ -7,6 +7,7 @@ class FileHandler {
         /*void readFile();*/
         void writeToFile(const std::string &value);
         bool fileExists() const;
+        std::string readFromFile();
 
 
 

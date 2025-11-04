@@ -6,7 +6,12 @@
 
 class Commands {
     public:
-        static std::map<std::string, CommandFunc> commands;
+        std::map<CommandType, CommandFunc> commands;
+
+        Commands();
     private:
-        std::string hash(const FileInfo& file);
+        std::string hash(std::string password);
+        bool validPassword(const FileInfo& file);
+        void hashAndStorePassword(FileInfo& file);
+        void crypt(FileInfo& file);
 };
