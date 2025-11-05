@@ -3,15 +3,41 @@
 #include <string>
 
 #include "CommandTypes.h"
+#include "../Interfaces/ICommands.h"
+#include "../Interfaces/IFileHandler.h"
 
-class Commands {
+class Commands : public ICommands {
     public:
         std::map<CommandType, CommandFunc> commands;
 
-        Commands();
+        explicit Commands(IFileHandler& fileHandlerInstance);
+
+        void executeCommand(CommandType type, FileInfo& file) override {
+            if (commands.contains(type)) commands[type](file);
+        }
     private:
-        std::string hash(std::string password);
-        bool validPassword(const FileInfo& file);
-        void hashAndStorePassword(FileInfo& file);
-        void crypt(FileInfo& file);
+        std::string hash(const std::string& password);
+        bool validPassword(const std::string& password);
+        void hashAndStorePassword(const FileInfo& file);
+        void crypt(const FileInfo& file);
+        void decrypt(const FileInfo& file);
+
+        bool gcm_encrypt(const unsigned char *plaintext,
+        int plaintext_len,
+        const unsigned char *key,
+        const unsigned char *iv,
+        unsigned char *ciphertext,
+        int &ciphertext_len);
+
+        bool gcm_decrypt(const unsigned char *ciphertext,
+            int ciphertext_len,
+            const unsigned char *key,
+            const unsigned char *iv,
+            unsigned char *plaintext,
+            int &plaintext_len
+            );
+
+        void handleErrors();
+        IFileHandler& _fileHandler;
+        std::string _passwordFile = ".secrets";
 };
