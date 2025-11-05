@@ -15,6 +15,9 @@ add_executable(SimpleCryptograph main.cpp
         POD/File.h
         commands/CommandTypes.h
         commands/Commands.cpp
-        commands/Commands.h)
+        commands/Commands.h
+        Interfaces/ICommands.h
+        Interfaces/IFileHandler.h
+)
 
 target_link_libraries(SimpleCryptograph PRIVATE OpenSSL::SSL OpenSSL::Crypto)
