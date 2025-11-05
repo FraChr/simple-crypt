@@ -1,8 +1,8 @@
-﻿//
-// Created by Frach on 04/11/2025.
-//
+﻿#pragma once
+#include "../commands/CommandTypes.h"
 
-#ifndef SIMPLECRYPTOGRAPH_ICOMMANDS_H
-#define SIMPLECRYPTOGRAPH_ICOMMANDS_H
-
-#endif //SIMPLECRYPTOGRAPH_ICOMMANDS_H
+class ICommands {
+    public:
+        virtual ~ICommands() = default;
+        virtual void executeCommand(CommandType type, FileInfo& file) = 0;
+};

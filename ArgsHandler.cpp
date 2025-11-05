@@ -11,16 +11,7 @@
 #include "POD/File.h"
 #include "commands/Commands.h"
 
-
-void pr(const char *value) {
-    const std::string val = value;
-    if ( val == "portal") {
-        std::cout << outputValues::draw << std::endl;
-    }
-    else {
-        std::cout << "error\n";
-    }
-}
+ArgsHandler::ArgsHandler(ICommands& cmdInstance) : commands(cmdInstance) {}
 
 void ArgsHandler::Handle(const int &argc, char *argv[]) {
     std::string commandName;
@@ -32,7 +23,7 @@ void ArgsHandler::Handle(const int &argc, char *argv[]) {
 
     int opt = 0;
     while ((opt = getopt(argc, argv, options)) != -1) {
-        auto op = static_cast<ArgsHandler::Option>(opt);
+        auto op = static_cast<Option>(opt);
         if (handlers.contains(op))
             handlers[op](optarg);
         else {
@@ -40,11 +31,15 @@ void ArgsHandler::Handle(const int &argc, char *argv[]) {
         }
     }
 
-    Commands com;
+    /*Commands com;
 
     const auto iterator = com.commands.find(commandType);
     if (commandType != CommandType::NONE) {
         iterator->second(file);
+    }*/
+
+    if (commandType != CommandType::NONE) {
+        commands.executeCommand(commandType, file);
     }
 
         // for debuging remove for production
@@ -60,7 +55,8 @@ std::map<ArgsHandler::Option, std::function<void(const char*)>> ArgsHandler::Cre
     handlers[Option::H] = [&](const char*){std::cout <<  outputValues::help;};
     handlers[Option::P] = [&file](const char* arg) {file.password = optarg;};
     handlers[Option::F] = [&file](const char* arg) {file.fileName = optarg;};
-    handlers[Option::D] = [](const char*) {std::cout << outputValues::draw;};
+    handlers[Option::D] = [&ct](const char*) {ct = CommandType::DECRYPT;};
+    /*handlers[Option::D] = [](const char*) {std::cout << outputValues::draw;};*/
 
     handlers[Option::MissingArgumentError] = [](const char*) {std::cout << "needs a value\n"; };
     handlers[Option::UnknownOptionError] = [](const char*) {std::cout << "unknown command\n"; };

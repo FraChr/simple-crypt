@@ -4,26 +4,29 @@
 #include <fstream>
 #include <iostream>
 
-#include "../Data/UI/ErrorText.h"
 
-FileHandler::FileHandler(const std::string &fileName) : _fileName(fileName)
-{
-}
-
-void FileHandler::writeToFile(const std::string &value) {
-    std::ofstream outfile(_fileName);
+void FileHandler::writeToFile(const std::string& filename, const std::string &value) {
+    std::ofstream outfile(filename);
     outfile << value;
-
 }
 
-bool FileHandler::fileExists() const {
-    return std::filesystem::exists(_fileName);
+bool FileHandler::fileExists(const std::string& filename) {
+    return std::filesystem::exists(filename);
 }
 
-std::string FileHandler::readFromFile() {
+std::string FileHandler::readFromFile(const std::string& filename) {
+    if (!fileExists(filename))
+        std::cerr << "File does not exist\n";
+
     std::string result;
-    std::ifstream file(_fileName);
-    std::getline(file, result);
+    std::ifstream file(filename);
+    std::ostringstream oss;
+    oss << file.rdbuf();
+    result = oss.str();
+    /*while (std::getline(file, result)) {
+        result +=
+    }*/
+    /*std::getline(file, result);*/
     return result;
 }
 
