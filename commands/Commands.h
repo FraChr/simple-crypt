@@ -16,7 +16,7 @@ class Commands : public ICommands {
             if (commands.contains(type)) commands[type](file);
         }
     private:
-        std::string hash(const std::string& password);
+        std::vector<char> hash(const std::string& password);
         bool validPassword(const std::string& password);
         void hashAndStorePassword(const FileInfo& file);
         void crypt(const FileInfo& file);
@@ -27,12 +27,13 @@ class Commands : public ICommands {
         const unsigned char *key,
         const unsigned char *iv,
         unsigned char *ciphertext,
-        int &ciphertext_len);
+        int &ciphertext_len, unsigned char *tag);
 
         bool gcm_decrypt(const unsigned char *ciphertext,
             int ciphertext_len,
             const unsigned char *key,
             const unsigned char *iv,
+            unsigned char *tag,
             unsigned char *plaintext,
             int &plaintext_len
             );
