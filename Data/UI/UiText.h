@@ -10,8 +10,18 @@ struct outputValues {
     )";
 
     static constexpr std::string_view help = R"(
-        -c [string arg] to crypt string
-        -v [hash] -p [enter password] to hash password
+        This help text:
+        -h
+    ==========================================
+        Create password for encryption:
+        -v -p [password]
+    ==========================================
+        File encryption:
+        -c -f [filename] -p [password]
+    ==========================================
+        File decryption:
+        -d -f [filename] -p [password]
+
     )";
 
     static constexpr std::string_view draw = R"(
