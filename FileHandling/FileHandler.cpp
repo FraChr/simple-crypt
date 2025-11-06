@@ -1,33 +1,36 @@
 ﻿#include "FileHandler.h"
-
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <vector>
 
 
-void FileHandler::writeToFile(const std::string& filename, const std::string &value) {
-    std::ofstream outfile(filename);
-    outfile << value;
+void FileHandler::writeToFile(const std::string& filename, const std::vector<char> &value) {
+    std::ofstream file(filename, std::ofstream::binary);
+    if (!file.is_open()) {
+        std::cerr << "Can't open file\n";
+        return;
+    }
+
+    file.write(value.data(), value.size());
 }
 
 bool FileHandler::fileExists(const std::string& filename) {
     return std::filesystem::exists(filename);
 }
 
-std::string FileHandler::readFromFile(const std::string& filename) {
-    if (!fileExists(filename))
-        std::cerr << "File does not exist\n";
+std::vector<char> FileHandler::readFromFile(const std::string& filename) {
+    std::ifstream file(filename, std::ios::binary);
+    if (!file.is_open()) {
+        std::cerr << "Can't open file\n";
+        return std::vector<char>();
+    }
 
-    std::string result;
-    std::ifstream file(filename);
-    std::ostringstream oss;
-    oss << file.rdbuf();
-    result = oss.str();
-    /*while (std::getline(file, result)) {
-        result +=
-    }*/
-    /*std::getline(file, result);*/
-    return result;
+    std::vector<char> buffer{
+    std::istreambuf_iterator<char>(file),
+    std::istreambuf_iterator<char>()
+    };
+    return buffer;
 }
 
 
