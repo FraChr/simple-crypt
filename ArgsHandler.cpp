@@ -20,7 +20,6 @@ void ArgsHandler::Handle(const int &argc, char *argv[]) {
 
     auto handlers = CreateHandlers(commandType, file);
 
-
     int opt = 0;
     while ((opt = getopt(argc, argv, options)) != -1) {
         auto op = static_cast<Option>(opt);
@@ -31,14 +30,7 @@ void ArgsHandler::Handle(const int &argc, char *argv[]) {
         }
     }
 
-    /*Commands com;
-
-    const auto iterator = com.commands.find(commandType);
-    if (commandType != CommandType::NONE) {
-        iterator->second(file);
-    }*/
-
-    if (commandType != CommandType::NONE) {
+    if (commandType != NONE) {
         commands.executeCommand(commandType, file);
     }
 
@@ -58,8 +50,8 @@ std::map<ArgsHandler::Option, std::function<void(const char*)>> ArgsHandler::Cre
     handlers[Option::D] = [&ct](const char*) {ct = CommandType::DECRYPT;};
     /*handlers[Option::D] = [](const char*) {std::cout << outputValues::draw;};*/
 
-    handlers[Option::MissingArgumentError] = [](const char*) {std::cout << "needs a value\n"; };
-    handlers[Option::UnknownOptionError] = [](const char*) {std::cout << "unknown command\n"; };
+    handlers[Option::MissingArgumentError] = [](const char*) {std::cerr << "needs a value\n"; };
+    handlers[Option::UnknownOptionError] = [](const char*) {std::cerr << "unknown command\n"; };
 
     return handlers;
 }
