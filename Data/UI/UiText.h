@@ -55,8 +55,8 @@ struct Art {
 };
 
 struct EncryptionOutput {
-    static constexpr std::string_view encryptCurrent = "Encrypting file...";
-    static constexpr std::string_view encryptSuccess = "File encrypted successfully.\n";
-    static constexpr std::string_view decryptCurrent = "Decrypting file...";
-    static constexpr std::string_view decryptSuccess = "Decrypting file...";
+    static constexpr std::string_view encryptCurrent = "\nEncrypting file...\n";
+    static constexpr std::string_view encryptSuccess = "\nFile encrypted successfully.\n";
+    static constexpr std::string_view decryptCurrent = "\nDecrypting file...\n";
+    static constexpr std::string_view decryptSuccess = "\nFile decrypted successfully...\n";
 };
