@@ -1,15 +1,16 @@
 ﻿#include "FileHandler.h"
+#include <algorithm>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <vector>
-
-
+#include "../Data/UI/ErrorText.h"
+#include "../Render/RenderCmd.h"
 
 void FileHandler::writeToFile(const std::string& filename, const std::vector<unsigned char> &value) {
     std::ofstream file(filename, std::ofstream::binary);
     if (!file.is_open()) {
-        std::cerr << "Can't open file\n";
+        RenderCmd::WriteError(FileError::FileNotOpen);
         return;
     }
 
@@ -22,21 +23,56 @@ bool FileHandler::fileExists(const std::string& filename) {
 }
 
 
-int loadingScreen(std::size_t totalSize, int progress, int lastPrecent);
-
 std::vector<unsigned char> FileHandler::readFromFile(const std::string& filename) {
     std::ifstream file(filename, std::ios::binary);
     if (!file.is_open()) {
-        std::cerr << "Can't open file\n";
-        return std::vector<unsigned char>();
+        RenderCmd::WriteError(FileError::FileNotOpen);
+        return {};
     }
 
-    std::vector<unsigned char> buffer{
+    auto start = std::chrono::high_resolution_clock::now();
+
+    // Non buffered read time on 10gb .txt file 409.665 seconds
+    // Buffered read time on 10gb .txt file 158.031 seconds
+    // Difference = 251.634 seconds
+
+    file.seekg(0, std::ios::end);
+    size_t totalFileSize = file.tellg();
+    file.seekg(0, std::ios::beg);
+
+    std::vector<unsigned char> totalFile(totalFileSize);
+
+    char fileChunk[4096];
+
+    std::streamsize totalRead = 0;
+    unsigned int percentRead = 0;
+
+    while (totalRead < totalFileSize) {
+        file.read(fileChunk, sizeof(fileChunk));
+
+        std::streamsize currentRead = file.gcount();
+        std::copy(fileChunk, fileChunk + currentRead,totalFile.begin() + totalRead);
+        totalRead += currentRead;
+
+
+        percentRead = (totalRead * 100) / totalFileSize;
+        std::string msg = "\rLoading: " + std::to_string(percentRead) + '%';
+        RenderCmd::WriteOut(msg);
+
+    }
+
+
+
+    /*std::vector<unsigned char> buffer{
     std::istreambuf_iterator(file),
     std::istreambuf_iterator<char>()
-    };
+    };*/
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsed_seconds = end - start;
+    std::cout << "\nelapsed time: " << elapsed_seconds.count() << " seconds\n";
+    return totalFile;
 
-    return buffer;
+
+    /*return buffer;*/
+
 }
-
-
