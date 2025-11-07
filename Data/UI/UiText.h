@@ -1,30 +1,35 @@
 ﻿#pragma once
 #include <string_view>
 
-struct outputValues {
-    static constexpr std::string_view menuOptions = R"(
-            ====================================
-                          Welcome to
-                      Simple Cryptograph
-            =====================================
-    )";
-
+struct Support {
     static constexpr std::string_view help = R"(
-        This help text:
-        -h
-    ==========================================
-        Create password for encryption:
-        -v -p [password]
-    ==========================================
-        File encryption:
-        -c -f [filename] -p [password]
-    ==========================================
-        File decryption:
-        -d -f [filename] -p [password]
-
+    ========================================================
+    |                     Welcome to                       |
+    |                 Simple Cryptograph                   |
+    ========================================================
+    |   This help text:                                    |
+    |   -h                                                 |
+    ========================================================
+    |   Create password for encryption:                    |
+    |   -v -p [password]                                   |
+    ========================================================
+    |   File encryption:                                   |
+    |   -c -f [filename.ext] -p [password]                 |
+    ========================================================
+    |   File decryption:                                   |
+    |   -d -f [filename.ext] -p [password]                 |
+    ========================================================
+    |   Masterpiece:                                       |
+    |   -q                                                 |
+    ========================================================
+    |   OpenSSl Error:                                     |
+    |   error:[error code]:[library name]::[reason string] |
+    ========================================================
     )";
+};
 
-    static constexpr std::string_view draw = R"(
+struct Art {
+    static constexpr std::string_view drawCake = R"(
                                 /M/              .,-=;//;-
                           .:/= ;MH/,    ,=/+%$XH@MM#@:
                           -$##@+$###@H@MMM#######H:.    -/H#
@@ -47,4 +52,11 @@ struct outputValues {
 
                       The cake is a lie!
     )";
+};
+
+struct EncryptionOutput {
+    static constexpr std::string_view encryptCurrent = "Encrypting file...";
+    static constexpr std::string_view encryptSuccess = "File encrypted successfully.\n";
+    static constexpr std::string_view decryptCurrent = "Decrypting file...";
+    static constexpr std::string_view decryptSuccess = "Decrypting file...";
 };
