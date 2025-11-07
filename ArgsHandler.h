@@ -1,6 +1,5 @@
 ﻿#pragma once
 #include <map>
-
 #include "commands/CommandTypes.h"
 #include "Interfaces/ICommands.h"
 
