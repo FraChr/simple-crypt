@@ -66,7 +66,7 @@ void Commands::encrypt(const FileInfo& file) {
         bool res = gcm_encrypt(plaintext, plaintext_len, key, iv, ciphertext.data(), ciphertext_len, tag);
 
         if (!res) {
-            RenderCmd::WriteError(EncryptDecrypError::encryptionFailure);
+            RenderCmd::WriteError(EncryptDecryptError::encryptionFailure);
             return;
         }
 
@@ -90,7 +90,7 @@ void Commands::decrypt(const FileInfo &file) {
         auto fileContents = _fileHandler.readFromFile(file.fileName);
 
         if (fileContents.size() < 32) {
-            RenderCmd::WriteError(EncryptDecrypError::notValidOrCorrupt);
+            RenderCmd::WriteError(EncryptDecryptError::notValidOrCorrupt);
             return;
         }
 
@@ -115,7 +115,7 @@ void Commands::decrypt(const FileInfo &file) {
         auto res = gcm_decrypt(ciphertext, ciphertext_len, key, iv, tag, plaintext.data(), plaintext_len);
 
         if (!res) {
-            RenderCmd::WriteError(EncryptDecrypError::decryptionFailure);
+            RenderCmd::WriteError(EncryptDecryptError::decryptionFailure);
 
             return;
         }
