@@ -11,13 +11,15 @@ add_executable(SimpleCryptograph main.cpp
         ArgsHandler.h
         FileHandling/FileHandler.cpp
         FileHandling/FileHandler.h
-        Data/UI/ErrorText.h
         POD/File.h
         commands/CommandTypes.h
         commands/Commands.cpp
         commands/Commands.h
         Interfaces/ICommands.h
         Interfaces/IFileHandler.h
+        Render/RenderCmd.cpp
+        Render/RenderCmd.h
+        Data/UI/ErrorText.h
 )
 
 target_link_libraries(SimpleCryptograph PRIVATE OpenSSL::SSL OpenSSL::Crypto)
