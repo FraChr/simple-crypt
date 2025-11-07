@@ -11,5 +11,5 @@ void RenderCmd::WriteError(const std::string_view &text) {
 
 void RenderCmd::WriteOutMaster(const std::string_view &text) {
     if (text.empty()) return;
-    std::cout << text << std::endl;
+    std::cout << text;
 }
