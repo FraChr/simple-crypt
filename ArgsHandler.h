@@ -10,14 +10,15 @@ class ArgsHandler {
         ArgsHandler(ICommands& cmdInstance);
         void Handle(const int &argc, char *argv[]);
     private:
-        const char* options = "chvdf:p:d:";
+        const char* options = ":qchvdf:p:d:";
         enum class Option : int{
-            C = 'c',
-            V = 'v',
-            H = 'h',
-            P = 'p',
-            F = 'f',
-            D = 'd',
+            ENCRYPT = 'c',
+            HashAndSave = 'v',
+            HELP = 'h',
+            PASSWORD = 'p',
+            FILE = 'f',
+            DECRYPT = 'd',
+            DRAW = 'q',
 
             MissingArgumentError = ':',
             UnknownOptionError = '?',

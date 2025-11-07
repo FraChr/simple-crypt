@@ -1,15 +1,12 @@
 ﻿#include "ArgsHandler.h"
-
 #include <functional>
 #include <getopt.h>
-#include <iostream>
 #include <map>
-#include <ostream>
-
 #include "Data/UI/ErrorText.h"
 #include "Data/UI/UiText.h"
 #include "POD/File.h"
 #include "commands/Commands.h"
+#include "Render/RenderCmd.h"
 
 ArgsHandler::ArgsHandler(ICommands& cmdInstance) : commands(cmdInstance) {}
 
@@ -26,7 +23,7 @@ void ArgsHandler::Handle(const int &argc, char *argv[]) {
         if (handlers.contains(op))
             handlers[op](optarg);
         else {
-            std::cerr << "unknown option " << opt;
+            throw std::string("Unknown Exception");
         }
     }
 
@@ -35,23 +32,29 @@ void ArgsHandler::Handle(const int &argc, char *argv[]) {
     }
 
         // for debuging remove for production
-        for (; optind < argc; optind++) {
-            std::cout << "extra args: " << argv[optind] << '\n';
-        }
+        /*for (; optind < argc; optind++) {
+            RenderCmd::WriteOut("extra args: ");
+        }*/
 }
 
 std::map<ArgsHandler::Option, std::function<void(const char*)>> ArgsHandler::CreateHandlers(CommandType& ct, FileInfo& file) {
     std::map<Option, std::function<void(const char*)>> handlers;
-    handlers[Option::C] = [&ct](const char*) {ct = CommandType::CRYPT;};
-    handlers[Option::V] = [&ct](const char*) {ct = CommandType::HASH;};
-    handlers[Option::H] = [&](const char*){std::cout <<  outputValues::help;};
-    handlers[Option::P] = [&file](const char* arg) {file.password = optarg;};
-    handlers[Option::F] = [&file](const char* arg) {file.fileName = optarg;};
-    handlers[Option::D] = [&ct](const char*) {ct = CommandType::DECRYPT;};
-    /*handlers[Option::D] = [](const char*) {std::cout << outputValues::draw;};*/
+    handlers[Option::ENCRYPT] = [&ct](const char*) {ct = CommandType::CRYPT;};
+    handlers[Option::HashAndSave] = [&ct](const char*) {ct = CommandType::HASH;};
+    handlers[Option::HELP] = [&](const char*){RenderCmd::WriteOut(Support::help);};
+    handlers[Option::PASSWORD] = [&file](const char* arg) {file.password = optarg;};
+    handlers[Option::FILE] = [&file](const char* arg) {file.fileName = optarg;};
+    handlers[Option::DECRYPT] = [&ct](const char*) {ct = CommandType::DECRYPT;};
+    handlers[Option::DRAW] = [](const char*) {RenderCmd::WriteOut(Art::drawCake);};
 
-    handlers[Option::MissingArgumentError] = [](const char*) {std::cerr << "needs a value\n"; };
-    handlers[Option::UnknownOptionError] = [](const char*) {std::cerr << "unknown command\n"; };
+    handlers[Option::MissingArgumentError] = [](const char*) {
+        RenderCmd::WriteError(CommandError::commandMissingArg);
+        RenderCmd::WriteOut(Support::help);
+    };
+    handlers[Option::UnknownOptionError] = [](const char*) {
+        RenderCmd::WriteError(CommandError::unknownCommand);
+        RenderCmd::WriteOut(Support::help);
+    };
 
     return handlers;
 }
