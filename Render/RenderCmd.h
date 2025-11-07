@@ -1,0 +1,13 @@
+﻿//
+// Created by Frach on 07/11/2025.
+//
+
+#ifndef SIMPLECRYPTOGRAPH_RENDERCMD_H
+#define SIMPLECRYPTOGRAPH_RENDERCMD_H
+
+
+class RenderCmd {
+};
+
+
+#endif //SIMPLECRYPTOGRAPH_RENDERCMD_H
