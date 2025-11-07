@@ -1,5 +1,15 @@
-﻿//
-// Created by Frach on 07/11/2025.
-//
+﻿#include "RenderCmd.h"
+#include <iostream>
 
-#include "RenderCmd.h"
+void RenderCmd::WriteOut(const std::string_view &text) {
+    WriteOutMaster(text);
+}
+
+void RenderCmd::WriteError(const std::string_view &text) {
+    WriteOutMaster(text);
+}
+
+void RenderCmd::WriteOutMaster(const std::string_view &text) {
+    if (text.empty()) return;
+    std::cout << text << std::endl;
+}

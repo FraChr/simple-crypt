@@ -1,13 +1,10 @@
-﻿//
-// Created by Frach on 07/11/2025.
-//
-
-#ifndef SIMPLECRYPTOGRAPH_RENDERCMD_H
-#define SIMPLECRYPTOGRAPH_RENDERCMD_H
-
+﻿#pragma once
+#include <string>
 
 class RenderCmd {
+    public:
+        static void WriteOut(const std::string_view &text);
+        static void WriteError(const std::string_view &text);
+    private:
+        static void WriteOutMaster(const std::string_view &text);
 };
-
-
-#endif //SIMPLECRYPTOGRAPH_RENDERCMD_H
