@@ -22,7 +22,7 @@ Open cmd / terminal in wanted directory
 
 Clone Repository:
 ```
-git clone git@github.com:FraChr/simple-crypt.git
+git https://github.com/FraChr/simple-crypt.git
 ```
 ```
 cd SimpleCryptograph
