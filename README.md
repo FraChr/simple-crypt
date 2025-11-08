@@ -25,7 +25,7 @@ Clone Repository:
 git clone https://github.com/FraChr/simple-crypt.git
 ```
 ```
-cd SimpleCryptograph
+cd simple-crypt
 ```
 Create a build directory:
 ```
