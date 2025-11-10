@@ -1,0 +1,8 @@
+﻿//
+// Created by Frach on 10/11/2025.
+//
+
+#ifndef SIMPLECRYPTOGRAPH_ILOGGER_H
+#define SIMPLECRYPTOGRAPH_ILOGGER_H
+
+#endif //SIMPLECRYPTOGRAPH_ILOGGER_H

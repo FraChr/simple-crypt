@@ -2,11 +2,11 @@
 #include <functional>
 #include <getopt.h>
 #include <map>
-#include "Data/UI/ErrorText.h"
-#include "Data/UI/UiText.h"
-#include "POD/File.h"
-#include "commands/Commands.h"
-#include "Render/RenderCmd.h"
+#include "../Data/UI/ErrorText.h"
+#include "../Data/UI/UiText.h"
+#include "../POD/File.h"
+#include "../commands/Commands.h"
+#include "../Render/RenderCmd.h"
 
 ArgsHandler::ArgsHandler(ICommands& cmdInstance) : commands(cmdInstance) {}
 

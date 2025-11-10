@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include <map>
-#include "commands/CommandTypes.h"
-#include "Interfaces/ICommands.h"
+#include "../commands/CommandTypes.h"
+#include "../Interfaces/ICommands.h"
 
 
 class ArgsHandler {
