@@ -3,12 +3,13 @@ project(SimpleCryptograph)
 
 set(CMAKE_CXX_STANDARD 20)
 
+
 find_package(OpenSSL REQUIRED)
 
 add_executable(SimpleCryptograph main.cpp
         Data/UI/UiText.h
-        ArgsHandler.cpp
-        ArgsHandler.h
+        ArgumentHandler/ArgsHandler.cpp
+        ArgumentHandler/ArgsHandler.h
         FileHandling/FileHandler.cpp
         FileHandling/FileHandler.h
         POD/File.h
@@ -20,6 +21,10 @@ add_executable(SimpleCryptograph main.cpp
         Render/RenderCmd.cpp
         Render/RenderCmd.h
         Data/UI/ErrorText.h
+        Logger/Logger.cpp
+        Logger/Logger.h
+        Interfaces/ILogger.h
 )
+set_target_properties(SimpleCryptograph PROPERTIES OUTPUT_NAME cp)
 
 target_link_libraries(SimpleCryptograph PRIVATE OpenSSL::SSL OpenSSL::Crypto)
