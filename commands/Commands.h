@@ -5,12 +5,13 @@
 #include "CommandTypes.h"
 #include "../Interfaces/ICommands.h"
 #include "../Interfaces/IFileHandler.h"
+#include "../Interfaces/ILogger.h"
 
 class Commands : public ICommands {
     public:
         std::map<CommandType, CommandFunc> commands;
 
-        explicit Commands(IFileHandler& fileHandlerInstance);
+        Commands(IFileHandler& fileHandlerInstance, ILogger& loggerInstance);
 
         void executeCommand(CommandType type, FileInfo& file) override {
             if (commands.contains(type)) commands[type](file);
@@ -42,5 +43,6 @@ class Commands : public ICommands {
         void HandleError();
 
         IFileHandler& _fileHandler;
+        ILogger &_logger;
         std::string _passwordFile = ".secrets";
 };

@@ -13,12 +13,11 @@
 
 #include "../Data/UI/ErrorText.h"
 #include "../Data/UI/UiText.h"
+#include "../Logger/Logger.h"
 #include "../Render/RenderCmd.h"
-#include <openssl/bio.h>
-#include <openssl/bioerr.h>
 
-
-Commands::Commands(IFileHandler& fileHandlerInstance) : _fileHandler(fileHandlerInstance) {
+Commands::Commands(IFileHandler& fileHandlerInstance, ILogger& loggerInstance)
+: _fileHandler(fileHandlerInstance), _logger(loggerInstance) {
     commands[HASH] = [this](const FileInfo& file){hashAndStorePassword(file);};
     commands[CRYPT] = [this](const FileInfo& file){encrypt(file);};
     commands[DECRYPT] = [this](const FileInfo& file){decrypt(file);};
@@ -43,6 +42,7 @@ void Commands::hashAndStorePassword(const FileInfo& file) {
 
 
 void Commands::encrypt(const FileInfo& file) {
+    _logger.log(LogLevel::INFO, "starting encryption");
     const bool validateKey = validPassword(file.password);
     if (_fileHandler.fileExists(file.fileName) && validateKey) {
         RenderCmd::WriteOut(EncryptionOutput::encryptCurrent);
@@ -55,7 +55,6 @@ void Commands::encrypt(const FileInfo& file) {
         auto key = keyFromFile.data();
 
         std::vector<unsigned char> ciphertext(fileContents.size() + 16);
-        /*int ciphertext_len = ciphertext.size();*/
         int ciphertext_len = 0;
         unsigned char iv[16];
         unsigned char tag[16];
@@ -129,12 +128,14 @@ void Commands::decrypt(const FileInfo &file) {
 
         RenderCmd::WriteOut(EncryptionOutput::decryptSuccess);
     } else {
-        std::cerr << "file dont exist or wrong key\n";
+        RenderCmd::WriteError(EncryptDecryptError::notValidOrCorrupt);
         RenderCmd::WriteError(FileError::FileNotFoundOrExist);
     }
 
 }
-
+/*
+ *  TODO compress in intervals of a fixed size bit size e.g 4kb
+ */
 bool Commands::gcm_encrypt(const unsigned char *plaintext,
                        int plaintext_len,
                        const unsigned char *key,
@@ -142,6 +143,7 @@ bool Commands::gcm_encrypt(const unsigned char *plaintext,
                        unsigned char *ciphertext,
                        int &ciphertext_len, unsigned char *tag)
 {
+    _logger.log(LogLevel::INFO, "Encrypting...");
     int len, final_len = 0;
 
     EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
@@ -185,12 +187,14 @@ bool Commands::gcm_encrypt(const unsigned char *plaintext,
         EVP_CIPHER_CTX_free(ctx);
         return false;
     }
-
+    _logger.log(LogLevel::INFO, "finished encrypting");
     EVP_CIPHER_CTX_free(ctx);
     return true;
 }
 
-
+/*
+ *   TODO decompress in intervals of a fixed size bit size e.g 4kb
+ */
 
 bool Commands::gcm_decrypt(const unsigned char *ciphertext,
                         int ciphertext_len,
@@ -242,6 +246,7 @@ bool Commands::gcm_decrypt(const unsigned char *ciphertext,
 
 void Commands::HandleError() {
     RenderCmd::WriteError(ERR_error_string(ERR_get_error(), nullptr));
+    _logger.log(LogLevel::ERROR, ERR_error_string(ERR_get_error(), nullptr));
 }
 
 
