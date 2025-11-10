@@ -17,7 +17,7 @@ class Logger : public ILogger {
         void createDirectory() const;
 
         static std::string levelToString(const LogLevel &level);
-        std::string _logfileName = "Log.txt";
+        std::string _logfileName = "LogData/Log.txt";
         std::string _logDirectory = "LogData";
         IFileHandler& _fileHandler;
 

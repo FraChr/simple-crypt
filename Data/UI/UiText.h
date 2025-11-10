@@ -60,3 +60,9 @@ struct EncryptionOutput {
     static constexpr std::string_view decryptCurrent = "\nDecrypting file...\n";
     static constexpr std::string_view decryptSuccess = "\nFile decrypted successfully...\n";
 };
+
+struct LoggerOutput {
+    static constexpr std::string_view logDirectoryCreated = "Successfully created log directory";
+    static constexpr std::string_view logDirectoryExist = "Directory already exsist";
+
+};

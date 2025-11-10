@@ -9,11 +9,15 @@ Logger::Logger(IFileHandler& filehandler) : _fileHandler(filehandler) {
 }
 
 void Logger::log(const LogLevel level, const std::string &message) {
-    createDirectory();
+    if (!std::filesystem::exists(_logDirectory)) {
+        createDirectory();
+    }
 
     auto timestamp = getCurrentFormatedTime();
     std::ostringstream logEntery;
     logEntery << '[' << timestamp << ']' << levelToString(level) << ": " << message << '\n';
+
+    /*RenderCmd::WriteOut(logEntery.str());*/
 
     _fileHandler.writeToFile(_logfileName, logEntery.str());
 }
