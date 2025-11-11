@@ -57,12 +57,20 @@ struct Art {
 struct EncryptionOutput {
     static constexpr std::string_view encryptCurrent = "\nEncrypting file...\n";
     static constexpr std::string_view encryptSuccess = "\nFile encrypted successfully.\n";
+    static constexpr std::string_view logEncryptStart = "Starting Encryption";
+    static constexpr std::string_view logEncryptedCurrent = "Encrypted file...";
+    static constexpr std::string_view logEncryptDone = "Finished Encrypting";
+};
+
+struct DecryptionOutput {
     static constexpr std::string_view decryptCurrent = "\nDecrypting file...\n";
     static constexpr std::string_view decryptSuccess = "\nFile decrypted successfully...\n";
+    static constexpr std::string_view logDecryptStart = "Starting Decryption";
+    static constexpr std::string_view logDecryptCurrent = "Decrypting file...";
+    static constexpr std::string_view logDecryptDone = "Finished Decrypting";
 };
 
 struct LoggerOutput {
     static constexpr std::string_view logDirectoryCreated = "Successfully created log directory";
-    static constexpr std::string_view logDirectoryExist = "Directory already exsist";
-
+    static constexpr std::string_view logDirectoryExist = "Directory already exist";
 };
