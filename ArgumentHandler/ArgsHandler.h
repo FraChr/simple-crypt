@@ -6,13 +6,12 @@
 
 class ArgsHandler {
     public:
-        ArgsHandler(ICommands& cmdInstance);
+        explicit ArgsHandler(ICommands& cmdInstance);
         void Handle(const int &argc, char *argv[]);
     private:
-        const char* options = ":qchvdf:p:d:";
+        const char* options = ":qchdf:p:d:";
         enum class Option : int{
             ENCRYPT = 'c',
-            HashAndSave = 'v',
             HELP = 'h',
             PASSWORD = 'p',
             FILE = 'f',

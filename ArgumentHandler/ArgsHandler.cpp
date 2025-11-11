@@ -23,7 +23,7 @@ void ArgsHandler::Handle(const int &argc, char *argv[]) {
         if (handlers.contains(op))
             handlers[op](optarg);
         else {
-            throw std::string("Unknown Exception");
+            throw std::exception();
         }
     }
 
@@ -40,7 +40,6 @@ void ArgsHandler::Handle(const int &argc, char *argv[]) {
 std::map<ArgsHandler::Option, std::function<void(const char*)>> ArgsHandler::CreateHandlers(CommandType& ct, FileInfo& file) {
     std::map<Option, std::function<void(const char*)>> handlers;
     handlers[Option::ENCRYPT] = [&ct](const char*) {ct = CommandType::CRYPT;};
-    handlers[Option::HashAndSave] = [&ct](const char*) {ct = CommandType::HASH;};
     handlers[Option::HELP] = [&](const char*){RenderCmd::WriteOut(Support::help);};
     handlers[Option::PASSWORD] = [&file](const char* arg) {file.password = optarg;};
     handlers[Option::FILE] = [&file](const char* arg) {file.fileName = optarg;};
