@@ -16,134 +16,107 @@
 #include "../Logger/Logger.h"
 #include "../Render/RenderCmd.h"
 
-Commands::Commands(IFileHandler& fileHandlerInstance, ILogger& loggerInstance)
-: _fileHandler(fileHandlerInstance), _logger(loggerInstance) {
-    commands[HASH] = [this](const FileInfo& file){hashAndStorePassword(file);};
-    commands[CRYPT] = [this](const FileInfo& file){encrypt(file);};
-    commands[DECRYPT] = [this](const FileInfo& file){decrypt(file);};
+Commands::Commands(IFileHandler &fileHandlerInstance, ILogger &loggerInstance)
+    : _fileHandler(fileHandlerInstance), _logger(loggerInstance) {
+    commands[CRYPT] = [this](const FileInfo &file) { encrypt(file); };
+    commands[DECRYPT] = [this](const FileInfo &file) { decrypt(file); };
 }
 
-bool Commands::validPassword(const std::string& password) {
-    const std::vector<unsigned char> hashedPass = hash(password);
-    const std::vector<unsigned char> original = _fileHandler.readFromFile(_passwordFile);
-    if (hashedPass == original) {
-        return true;
+void Commands::encrypt(const FileInfo &file) {
+    _logger.log(LogLevel::INFO, std::string(EncryptionOutput::logEncryptStart));
+
+    RenderCmd::WriteOut(EncryptionOutput::encryptCurrent);
+
+
+    auto fileContents = _fileHandler.readFromFile(file.fileName);
+    auto plaintext = fileContents.data();
+    int plaintext_len = static_cast<int>(fileContents.size());
+
+    std::vector<unsigned char> keyVec = hash(file.password);
+    const unsigned char *key = keyVec.data();
+
+    std::vector<unsigned char> ciphertext(fileContents.size() + 16);
+    int ciphertext_len = 0;
+    unsigned char iv[16];
+    unsigned char tag[16];
+
+
+    bool res = gcm_encrypt(plaintext, plaintext_len, key, iv, ciphertext.data(), ciphertext_len, tag);
+
+    if (!res) {
+        RenderCmd::WriteError(EncryptDecryptError::encryptionFailure);
+        _logger.log(LogLevel::ERROR, std::string(EncryptDecryptError::logEncryptionFailure));
+        return;
     }
-    return false;
-}
 
+    std::vector<unsigned char> out;
+    out.insert(out.end(), iv, (iv) + 16);
+    out.insert(out.end(), (ciphertext.data()), (ciphertext.data()) + ciphertext_len);
+    out.insert(out.end(), (tag), (tag) + 16);
+    _fileHandler.writeToFile(file.fileName, out);
 
-
-void Commands::hashAndStorePassword(const FileInfo& file) {
-    const std::vector<unsigned char> hexHash = hash(file.password);
-    _fileHandler.writeToFile(_passwordFile, hexHash);
-}
-
-
-
-void Commands::encrypt(const FileInfo& file) {
-    _logger.log(LogLevel::INFO, "starting encryption");
-    const bool validateKey = validPassword(file.password);
-    if (_fileHandler.fileExists(file.fileName) && validateKey) {
-        RenderCmd::WriteOut(EncryptionOutput::encryptCurrent);
-
-        auto fileContents = _fileHandler.readFromFile(file.fileName);
-        auto plaintext = fileContents.data();
-        int plaintext_len = static_cast<int>(fileContents.size());
-
-        auto keyFromFile = _fileHandler.readFromFile(_passwordFile);
-        auto key = keyFromFile.data();
-
-        std::vector<unsigned char> ciphertext(fileContents.size() + 16);
-        int ciphertext_len = 0;
-        unsigned char iv[16];
-        unsigned char tag[16];
-
-
-
-
-        bool res = gcm_encrypt(plaintext, plaintext_len, key, iv, ciphertext.data(), ciphertext_len, tag);
-
-        if (!res) {
-            RenderCmd::WriteError(EncryptDecryptError::encryptionFailure);
-            return;
-        }
-
-        std::vector<unsigned char> out;
-        out.insert(out.end(), iv, (iv) + 16);
-        out.insert(out.end(), (ciphertext.data()), (ciphertext.data()) + ciphertext_len);
-        out.insert(out.end(), (tag), (tag) + 16);
-        _fileHandler.writeToFile(file.fileName, out);
-
-        RenderCmd::WriteOut(EncryptionOutput::encryptSuccess);
-    }else {
+    RenderCmd::WriteOut(EncryptionOutput::encryptSuccess);
+    /*}else {
         RenderCmd::WriteError("file dont exist or wrong key\n");
-    }
+    }*/
 }
 
 void Commands::decrypt(const FileInfo &file) {
-    const bool validateKey = validPassword(file.password);
-    if (_fileHandler.fileExists(file.fileName) && validateKey) {
-        RenderCmd::WriteOut(EncryptionOutput::decryptCurrent);
+    _logger.log(LogLevel::INFO, std::string(DecryptionOutput::logDecryptStart));
 
-        auto fileContents = _fileHandler.readFromFile(file.fileName);
+    RenderCmd::WriteOut(DecryptionOutput::decryptCurrent);
 
-        if (fileContents.size() < 32) {
-            RenderCmd::WriteError(EncryptDecryptError::notValidOrCorrupt);
-            return;
-        }
+    auto fileContents = _fileHandler.readFromFile(file.fileName);
 
-        unsigned char iv[16]{};
-        std::memcpy(iv, fileContents.data(), 16);
-
-        unsigned char tag[16]{};
-        std::memcpy(tag, fileContents.data() + fileContents.size() - 16, 16);
-
-        int ciphertext_len = static_cast<int>(fileContents.size() - 32);
-        auto ciphertext = (fileContents.data() + 16);
-
-        auto keyFromFile = _fileHandler.readFromFile(_passwordFile);
-        auto key = keyFromFile.data();
-
-
-
-
-        std::vector<unsigned char> plaintext(ciphertext_len + 16);
-        int plaintext_len = 0;
-
-        auto res = gcm_decrypt(ciphertext, ciphertext_len, key, iv, tag, plaintext.data(), plaintext_len);
-
-        if (!res) {
-            RenderCmd::WriteError(EncryptDecryptError::decryptionFailure);
-
-            return;
-        }
-
-        const std::vector out (
-            plaintext.data(),
-            plaintext.data() + plaintext_len);
-
-        _fileHandler.writeToFile(file.fileName, out);
-
-
-        RenderCmd::WriteOut(EncryptionOutput::decryptSuccess);
-    } else {
+    if (fileContents.size() < 32) {
         RenderCmd::WriteError(EncryptDecryptError::notValidOrCorrupt);
-        RenderCmd::WriteError(FileError::FileNotFoundOrExist);
+        return;
     }
 
+    unsigned char iv[16]{};
+    std::memcpy(iv, fileContents.data(), 16);
+
+    unsigned char tag[16]{};
+    std::memcpy(tag, fileContents.data() + fileContents.size() - 16, 16);
+
+    int ciphertext_len = static_cast<int>(fileContents.size() - 32);
+    auto ciphertext = (fileContents.data() + 16);
+
+    std::vector<unsigned char> keyVec = hash(file.password);
+    const unsigned char *key = keyVec.data();
+
+
+    std::vector<unsigned char> plaintext(ciphertext_len + 16);
+    int plaintext_len = 0;
+
+    auto res = gcm_decrypt(ciphertext, ciphertext_len, key, iv, tag, plaintext.data(), plaintext_len);
+
+    if (!res) {
+        RenderCmd::WriteError(EncryptDecryptError::logDecryptionFailure);
+
+        return;
+    }
+
+    const std::vector out(
+        plaintext.data(),
+        plaintext.data() + plaintext_len);
+
+    _fileHandler.writeToFile(file.fileName, out);
+
+
+    RenderCmd::WriteOut(DecryptionOutput::decryptSuccess);
 }
+
 /*
  *  TODO compress in intervals of a fixed size bit size e.g 4kb
  */
 bool Commands::gcm_encrypt(const unsigned char *plaintext,
-                       int plaintext_len,
-                       const unsigned char *key,
-                       unsigned char *iv,
-                       unsigned char *ciphertext,
-                       int &ciphertext_len, unsigned char *tag)
-{
-    _logger.log(LogLevel::INFO, "Encrypting...");
+                           int plaintext_len,
+                           const unsigned char *key,
+                           unsigned char *iv,
+                           unsigned char *ciphertext,
+                           int &ciphertext_len, unsigned char *tag) {
+    _logger.log(LogLevel::INFO, std::string(EncryptionOutput::logEncryptedCurrent));
     int len, final_len = 0;
 
     EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
@@ -153,7 +126,7 @@ bool Commands::gcm_encrypt(const unsigned char *plaintext,
         return false;
     }
 
-    const EVP_CIPHER* cipher = EVP_aes_256_gcm();
+    const EVP_CIPHER *cipher = EVP_aes_256_gcm();
     const int iv_len = EVP_CIPHER_iv_length(cipher);
 
     if (RAND_bytes(iv, iv_len) != 1) {
@@ -187,7 +160,7 @@ bool Commands::gcm_encrypt(const unsigned char *plaintext,
         EVP_CIPHER_CTX_free(ctx);
         return false;
     }
-    _logger.log(LogLevel::INFO, "finished encrypting");
+    _logger.log(LogLevel::INFO, std::string(EncryptionOutput::logEncryptDone));
     EVP_CIPHER_CTX_free(ctx);
     return true;
 }
@@ -197,13 +170,13 @@ bool Commands::gcm_encrypt(const unsigned char *plaintext,
  */
 
 bool Commands::gcm_decrypt(const unsigned char *ciphertext,
-                        int ciphertext_len,
-                        const unsigned char *key,
-                        const unsigned char *iv,
-                        unsigned char *tag,
-                        unsigned char *plaintext,
-                        int &plaintext_len)
-{
+                           int ciphertext_len,
+                           const unsigned char *key,
+                           const unsigned char *iv,
+                           unsigned char *tag,
+                           unsigned char *plaintext,
+                           int &plaintext_len) {
+    _logger.log(LogLevel::INFO, std::string(DecryptionOutput::logDecryptCurrent));
     int len = 0, final_len = 0;
 
     const EVP_CIPHER *cipher = EVP_aes_256_gcm();
@@ -240,27 +213,68 @@ bool Commands::gcm_decrypt(const unsigned char *ciphertext,
     }
     plaintext_len = len + final_len;
 
+    _logger.log(LogLevel::INFO, std::string(DecryptionOutput::logDecryptDone));
     EVP_CIPHER_CTX_free(ctx);
     return true;
 }
 
 void Commands::HandleError() {
-    RenderCmd::WriteError(ERR_error_string(ERR_get_error(), nullptr));
-    _logger.log(LogLevel::ERROR, ERR_error_string(ERR_get_error(), nullptr));
+    char errBuffer[256];
+    ERR_error_string(ERR_get_error(), errBuffer);
+    _logger.log(LogLevel::ERROR, errBuffer);
 }
 
-
-std::vector<unsigned char> Commands::hash(const std::string& password) {
-    unsigned char hashLength [SHA256_DIGEST_LENGTH];
-    std::vector<unsigned char> passwordBytes(password.begin(), password.end());
-    SHA256(passwordBytes.data(), passwordBytes.size(), hashLength);
-
-    std::ostringstream hexHash;
-    for (const auto i : hashLength) {
-        hexHash << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(i);
+bool Commands::hashPassword(const unsigned char *data,
+                            size_t data_len,
+                            unsigned char *out_digest,
+                            unsigned int *out_len) {
+    const EVP_MD *md = nullptr;
+    md = EVP_sha256();
+    if (!md) {
+        HandleError();
+        return false;
     }
-    const std::string hashStr = hexHash.str();
-    return {hashStr.begin(), hashStr.end()};
+
+    EVP_MD_CTX *mdctx = EVP_MD_CTX_new();
+    if (!mdctx) {
+        HandleError();
+        return false;
+    }
+
+    if (EVP_DigestInit_ex(mdctx, md, nullptr) != 1) {
+        HandleError();
+        return false;
+    }
+    if (EVP_DigestUpdate(mdctx, data, data_len) != 1) {
+        HandleError();
+        return false;
+    }
+    if (EVP_DigestFinal_ex(mdctx, out_digest, out_len) != 1) {
+        HandleError();
+        return false;
+    }
+    EVP_MD_CTX_free(mdctx);
+    return true;
 }
 
 
+std::vector<unsigned char> Commands::hash(const std::string &password) {
+    unsigned char hashBytes[SHA256_DIGEST_LENGTH];
+    unsigned int hashLen = 0;
+
+    std::vector<unsigned char> passwordBytes(password.begin(), password.end());
+
+    hashPassword(passwordBytes.data(), passwordBytes.size(), hashBytes, &hashLen);
+
+    /*SHA256(passwordBytes.data(), passwordBytes.size(), hashBytes);*/
+
+    return {hashBytes, hashBytes + SHA256_DIGEST_LENGTH};
+}
+
+/*std::vector<unsigned char> Commands::hash(const std::string &password) {
+    unsigned char hashBytes[SHA256_DIGEST_LENGTH];
+    std::vector<unsigned char> passwordBytes(password.begin(), password.end());
+    SHA256(passwordBytes.data(), passwordBytes.size(), hashBytes);
+
+    return {hashBytes, hashBytes + SHA256_DIGEST_LENGTH};
+}*/

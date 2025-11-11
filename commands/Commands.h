@@ -8,41 +8,44 @@
 #include "../Interfaces/ILogger.h"
 
 class Commands : public ICommands {
-    public:
-        std::map<CommandType, CommandFunc> commands;
+public:
+    std::map<CommandType, CommandFunc> commands;
 
-        Commands(IFileHandler& fileHandlerInstance, ILogger& loggerInstance);
+    Commands(IFileHandler &fileHandlerInstance, ILogger &loggerInstance);
 
-        void executeCommand(CommandType type, FileInfo& file) override {
-            if (commands.contains(type)) commands[type](file);
-        }
-    private:
-        std::vector<unsigned char> hash(const std::string& password);
-        bool validPassword(const std::string& password);
-        void hashAndStorePassword(const FileInfo& file);
-        void encrypt(const FileInfo& file);
-        void decrypt(const FileInfo& file);
+    void executeCommand(CommandType type, FileInfo &file) override {
+        if (commands.contains(type)) commands[type](file);
+    }
 
-        bool gcm_encrypt(const unsigned char *plaintext,
-            int plaintext_len,
-            const unsigned char *key,
-            unsigned char *iv,
-            unsigned char *ciphertext,
-            int &ciphertext_len, unsigned char *tag
-        );
+private:
+    std::vector<unsigned char> hash(const std::string &password);
 
-        bool gcm_decrypt(const unsigned char *ciphertext,
-            int ciphertext_len,
-            const unsigned char *key,
-            const unsigned char *iv,
-            unsigned char *tag,
-            unsigned char *plaintext,
-            int &plaintext_len
-            );
+    bool hashPassword(const unsigned char *data, size_t data_len, unsigned char *out_digest, unsigned int *out_len);
 
-        void HandleError();
+    void encrypt(const FileInfo &file);
 
-        IFileHandler& _fileHandler;
-        ILogger &_logger;
-        std::string _passwordFile = ".secrets";
+    void decrypt(const FileInfo &file);
+
+    bool gcm_encrypt(const unsigned char *plaintext,
+                     int plaintext_len,
+                     const unsigned char *key,
+                     unsigned char *iv,
+                     unsigned char *ciphertext,
+                     int &ciphertext_len, unsigned char *tag
+    );
+
+    bool gcm_decrypt(const unsigned char *ciphertext,
+                     int ciphertext_len,
+                     const unsigned char *key,
+                     const unsigned char *iv,
+                     unsigned char *tag,
+                     unsigned char *plaintext,
+                     int &plaintext_len
+    );
+
+    void HandleError();
+
+    IFileHandler &_fileHandler;
+    ILogger &_logger;
+    std::string _passwordFile = ".secrets";
 };
