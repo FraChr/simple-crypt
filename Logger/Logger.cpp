@@ -5,7 +5,7 @@
 #include "../FileHandling/FileHandler.h"
 #include "../Render/RenderCmd.h"
 
-Logger::Logger(IFileHandler& filehandler) : _fileHandler(filehandler) {
+Logger::Logger(IFileHandler &filehandler) : _fileHandler(filehandler) {
 }
 
 void Logger::log(const LogLevel level, const std::string &message) {
@@ -24,11 +24,11 @@ void Logger::log(const LogLevel level, const std::string &message) {
 
 std::string Logger::getCurrentFormatedTime() {
     const time_t now = time(nullptr);
-    const tm* timeInfo = localtime(&now);
+    const tm *timeInfo = localtime(&now);
     char timestamp[20];
 
-    strftime(timestamp,sizeof(timestamp), "%Y-%m-%d %H:%M:%S", timeInfo);
-    return std::string(timestamp);
+    strftime(timestamp, sizeof(timestamp), "%Y-%m-%d %H:%M:%S", timeInfo);
+    return {timestamp};
 }
 
 void Logger::createDirectory() const {
@@ -58,4 +58,3 @@ std::string Logger::levelToString(const LogLevel &level) {
         default: return "UNKNOWN";
     }
 }
-

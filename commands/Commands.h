@@ -13,7 +13,7 @@ public:
 
     Commands(IFileHandler &fileHandlerInstance, ILogger &loggerInstance);
 
-    void executeCommand(CommandType type, FileInfo &file) override {
+    void executeCommand(const CommandType type, FileInfo &file) override {
         if (commands.contains(type)) commands[type](file);
     }
 
@@ -43,7 +43,7 @@ private:
                      int &plaintext_len
     );
 
-    void HandleError();
+    void HandleError() const;
 
     IFileHandler &_fileHandler;
     ILogger &_logger;

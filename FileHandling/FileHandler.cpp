@@ -10,7 +10,7 @@
 
 void FileHandler::writeToFile(const std::string &filename, const std::vector<unsigned char> &value) {
     std::ofstream file(filename, std::ofstream::binary);
-    if(fileIsOpenCheck(file)) return;
+    if (fileIsOpenCheck(file)) return;
 
     auto totalFileSize = static_cast<std::streamsize>(value.size());
     char fileChunk[4096];
@@ -24,17 +24,27 @@ void FileHandler::writeToFile(const std::string &filename, const std::vector<uns
 
         progressPercent(totalWritten, totalFileSize, "Writing");
     }
+    resetPreviousPercent();
 }
 
-void FileHandler::progressPercent(std::streamsize totalProcessed, std::streamsize totalFileSize, std::string prompt) {
-    unsigned int percentProcessed = (totalProcessed * 100 / totalFileSize);
-    /*std::string msg = "\r: " + std::to_string(percentProcessed) + '%';*/
-    std::string msg = std::format("\r{}: {} %", prompt, percentProcessed);
-    RenderCmd::WriteOut(msg);
+void FileHandler::progressPercent(
+    const std::streamsize totalProcessed,
+    const std::streamsize totalFileSize,
+    std::string prompt)
+{
+    unsigned int percentProcessed = totalProcessed * 100 / totalFileSize;
+
+
+    if (percentProcessed > _previousPercent) {
+        std::string msg = std::format("\r{}: {} %", prompt, percentProcessed);
+        RenderCmd::WriteOut(msg);
+        _previousPercent = percentProcessed;
+    }
 }
 
 
-template <typename T> bool FileHandler::fileIsOpenCheck(const T &file) {
+template<typename T>
+bool FileHandler::fileIsOpenCheck(const T &file) {
     if (!file.is_open()) {
         RenderCmd::WriteError(FileError::FileNotOpen);
         return true;
@@ -43,7 +53,7 @@ template <typename T> bool FileHandler::fileIsOpenCheck(const T &file) {
 }
 
 void FileHandler::writeToFile(const std::string &filename, const std::string &value) {
-    std::ofstream file(filename,std::ofstream::app);
+    std::ofstream file(filename, std::ofstream::app);
     if (!file.is_open()) {
         RenderCmd::WriteError(FileError::FileNotOpen);
         return;
@@ -51,16 +61,14 @@ void FileHandler::writeToFile(const std::string &filename, const std::string &va
     file.write(value.c_str(), value.length());
 }
 
-bool FileHandler::fileExists(const std::string& filename) {
+bool FileHandler::fileExists(const std::string &filename) {
     return std::filesystem::exists(filename);
 }
 
 
-
-
-std::vector<unsigned char> FileHandler::readFromFile(const std::string& filename) {
+std::vector<unsigned char> FileHandler::readFromFile(const std::string &filename) {
     std::ifstream file(filename, std::ios::binary);
-    if(fileIsOpenCheck(file)) return{};
+    if (fileIsOpenCheck(file)) return {};
 
     auto start = std::chrono::high_resolution_clock::now();
 
@@ -69,7 +77,7 @@ std::vector<unsigned char> FileHandler::readFromFile(const std::string& filename
     // Difference = 251.634 seconds
 
     file.seekg(0, std::ios::end);
-    size_t totalFileSize = file.tellg();
+    const auto totalFileSize = file.tellg();
     file.seekg(0, std::ios::beg);
 
     std::vector<unsigned char> totalFile(totalFileSize);
@@ -84,14 +92,13 @@ std::vector<unsigned char> FileHandler::readFromFile(const std::string& filename
         totalRead += currentRead;
 
         progressPercent(totalRead, totalFileSize, "Reading");
-
     }
 
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> elapsed_seconds = end - start;
     std::cout << "\nelapsed time: " << elapsed_seconds.count() << " seconds\n";
+    resetPreviousPercent();
     return totalFile;
-
 }
 
 

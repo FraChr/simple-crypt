@@ -2,7 +2,6 @@
 #include <cstring>
 #include <iomanip>
 #include <iostream>
-#include <sstream>
 #include <vector>
 #include "../FileHandling/FileHandler.h"
 #include "../POD/File.h"
@@ -50,15 +49,12 @@ void Commands::encrypt(const FileInfo &file) {
     }
 
     std::vector<unsigned char> out;
-    out.insert(out.end(), iv, (iv) + 16);
-    out.insert(out.end(), (ciphertext.data()), (ciphertext.data()) + ciphertext_len);
-    out.insert(out.end(), (tag), (tag) + 16);
+    out.insert(out.end(), iv, iv + 16);
+    out.insert(out.end(), ciphertext.data(), ciphertext.data() + ciphertext_len);
+    out.insert(out.end(), tag, tag + 16);
     _fileHandler.writeToFile(file.fileName, out);
 
     RenderCmd::WriteOut(EncryptionOutput::encryptSuccess);
-    /*}else {
-        RenderCmd::WriteError("file dont exist or wrong key\n");
-    }*/
 }
 
 void Commands::decrypt(const FileInfo &file) {
@@ -80,7 +76,7 @@ void Commands::decrypt(const FileInfo &file) {
     std::memcpy(tag, fileContents.data() + fileContents.size() - 16, 16);
 
     int ciphertext_len = static_cast<int>(fileContents.size() - 32);
-    auto ciphertext = (fileContents.data() + 16);
+    auto ciphertext = fileContents.data() + 16;
 
     std::vector<unsigned char> keyVec = hash(file.password);
     const unsigned char *key = keyVec.data();
@@ -111,7 +107,7 @@ void Commands::decrypt(const FileInfo &file) {
  *  TODO compress in intervals of a fixed size bit size e.g 4kb
  */
 bool Commands::gcm_encrypt(const unsigned char *plaintext,
-                           int plaintext_len,
+                           const int plaintext_len,
                            const unsigned char *key,
                            unsigned char *iv,
                            unsigned char *ciphertext,
@@ -170,7 +166,7 @@ bool Commands::gcm_encrypt(const unsigned char *plaintext,
  */
 
 bool Commands::gcm_decrypt(const unsigned char *ciphertext,
-                           int ciphertext_len,
+                           const int ciphertext_len,
                            const unsigned char *key,
                            const unsigned char *iv,
                            unsigned char *tag,
@@ -218,18 +214,19 @@ bool Commands::gcm_decrypt(const unsigned char *ciphertext,
     return true;
 }
 
-void Commands::HandleError() {
+void Commands::HandleError() const {
     char errBuffer[256];
     ERR_error_string(ERR_get_error(), errBuffer);
     _logger.log(LogLevel::ERROR, errBuffer);
 }
 
 bool Commands::hashPassword(const unsigned char *data,
-                            size_t data_len,
+                            const size_t data_len,
                             unsigned char *out_digest,
                             unsigned int *out_len) {
     const EVP_MD *md = nullptr;
     md = EVP_sha256();
+    /*md = EVP_sha3_256();*/
     if (!md) {
         HandleError();
         return false;
@@ -270,11 +267,3 @@ std::vector<unsigned char> Commands::hash(const std::string &password) {
 
     return {hashBytes, hashBytes + SHA256_DIGEST_LENGTH};
 }
-
-/*std::vector<unsigned char> Commands::hash(const std::string &password) {
-    unsigned char hashBytes[SHA256_DIGEST_LENGTH];
-    std::vector<unsigned char> passwordBytes(password.begin(), password.end());
-    SHA256(passwordBytes.data(), passwordBytes.size(), hashBytes);
-
-    return {hashBytes, hashBytes + SHA256_DIGEST_LENGTH};
-}*/

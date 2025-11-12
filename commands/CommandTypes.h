@@ -4,7 +4,7 @@
 
 struct FileInfo;
 
-using CommandFunc = std::function<void( FileInfo&)>;
+using CommandFunc = std::function<void(FileInfo &)>;
 
 enum CommandType {
     NONE,

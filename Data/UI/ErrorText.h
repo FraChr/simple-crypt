@@ -6,7 +6,6 @@ struct FileError {
     static constexpr std::string_view FileNotFoundOrExist = "File not found or dont exist";
     static constexpr std::string_view FileNameNotFound = "Name not found";
     static constexpr std::string_view FileNotOpen = "Cannot open file";
-
 };
 
 struct EncryptDecryptError {

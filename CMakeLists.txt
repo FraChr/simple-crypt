@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD 20)
 
 
 find_package(OpenSSL REQUIRED)
+find_package(Catch2 3 REQUIRED)
 
 add_executable(SimpleCryptograph main.cpp
         Data/UI/UiText.h
@@ -25,6 +26,32 @@ add_executable(SimpleCryptograph main.cpp
         Logger/Logger.h
         Interfaces/ILogger.h
 )
-set_target_properties(SimpleCryptograph PROPERTIES OUTPUT_NAME cp)
 
 target_link_libraries(SimpleCryptograph PRIVATE OpenSSL::SSL OpenSSL::Crypto)
+set_target_properties(SimpleCryptograph PROPERTIES OUTPUT_NAME cp)
+
+
+
+add_executable(SimpleCryptographTests Tests/test.cpp
+        Interfaces/IFileHandler.h
+        FileHandling/FileHandler.cpp
+        FileHandling/FileHandler.h
+        Render/RenderCmd.cpp
+        Render/RenderCmd.h
+        Tests/TestMocks.h
+        Logger/Logger.cpp
+        Logger/Logger.h
+        Interfaces/IFileHandler.h
+        Interfaces/ILogger.h
+)
+
+target_link_libraries(SimpleCryptographTests PRIVATE
+    Catch2::Catch2WithMain
+    OpenSSL::SSL
+    OpenSSL::Crypto
+)
+
+include(CTest)
+include(Catch)
+catch_discover_tests(SimpleCryptographTests)
+
