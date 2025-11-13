@@ -11,7 +11,7 @@ public:
     void Handle(const int &argc, char *argv[]);
 
 private:
-    const char *options = ":qchdf:p:d:";
+    const char *options = ":qchdf:p:d:v";
 
     enum class Option : int {
         ENCRYPT = 'c',
@@ -20,12 +20,13 @@ private:
         FILE = 'f',
         DECRYPT = 'd',
         DRAW = 'q',
+        COMPRESS = 'v',
 
         MissingArgumentError = ':',
         UnknownOptionError = '?',
     };
 
-    std::map<Option, std::function<void(const char *)> > CreateHandlers(CommandType &ct, FileInfo &file);
+    std::map<Option, std::function<void(const char *)> > CreateHandlers(CommandType &ct, userInput &file);
 
     ICommands &commands;
 };

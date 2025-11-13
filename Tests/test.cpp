@@ -1,13 +1,10 @@
 ﻿#include <fstream>
 #include <catch2/catch_test_macros.hpp>
-
 #include "TestMocks.h"
-#include "../ArgumentHandler/ArgsHandler.h"
 #include "../commands/Commands.h"
 #include "../FileHandling/FileHandler.h"
 #include "../Logger/Logger.h"
-#include "../Data/UI/UiText.h"
-#include "../Data/UI/ErrorText.h"
+
 
 TEST_CASE("File Handler", "[file]") {
     FileHandler fileHandler;

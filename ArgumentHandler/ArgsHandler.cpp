@@ -8,13 +8,12 @@
 #include "../commands/Commands.h"
 #include "../Render/RenderCmd.h"
 
-ArgsHandler::ArgsHandler(ICommands &cmdInstance) : commands(cmdInstance) {
-}
+ArgsHandler::ArgsHandler(ICommands &cmdInstance) : commands(cmdInstance) {}
 
 void ArgsHandler::Handle(const int &argc, char *argv[]) {
     std::string commandName;
     CommandType commandType{};
-    FileInfo file;
+    userInput file;
 
     auto handlers = CreateHandlers(commandType, file);
 
@@ -39,14 +38,15 @@ void ArgsHandler::Handle(const int &argc, char *argv[]) {
 }
 
 std::map<ArgsHandler::Option, std::function<void(const char *)> > ArgsHandler::CreateHandlers(
-    CommandType &ct, FileInfo &file) {
+    CommandType &ct, userInput &file) {
     std::map<Option, std::function<void(const char *)> > handlers;
     handlers[Option::ENCRYPT] = [&ct](const char *) { ct = CRYPT; };
     handlers[Option::HELP] = [&](const char *) { RenderCmd::WriteOut(Support::help); };
     handlers[Option::PASSWORD] = [&file](const char *arg) { file.password = optarg; };
-    handlers[Option::FILE] = [&file](const char *arg) { file.fileName = optarg; };
+    handlers[Option::FILE] = [&file](const char *arg) { file.filename = optarg; };
     handlers[Option::DECRYPT] = [&ct](const char *) { ct = DECRYPT; };
     handlers[Option::DRAW] = [](const char *) { RenderCmd::WriteOut(Art::drawCake); };
+    handlers[Option::COMPRESS] = [&ct](const char *) {ct = COMPRESS; };
 
     handlers[Option::MissingArgumentError] = [](const char *) {
         RenderCmd::WriteError(CommandError::commandMissingArg);

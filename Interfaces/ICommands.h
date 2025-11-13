@@ -5,5 +5,5 @@ class ICommands {
 public:
     virtual ~ICommands() = default;
 
-    virtual void executeCommand(CommandType type, FileInfo &file) = 0;
+    virtual void executeCommand(CommandType type, userInput &file) = 0;
 };

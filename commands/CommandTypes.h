@@ -2,13 +2,14 @@
 
 #include <functional>
 
-struct FileInfo;
+struct userInput;
 
-using CommandFunc = std::function<void(FileInfo &)>;
+using CommandFunc = std::function<void(userInput &)>;
 
 enum CommandType {
     NONE,
     CRYPT,
     DECRYPT,
-    HASH
+    HASH,
+    COMPRESS,
 };

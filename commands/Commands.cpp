@@ -2,6 +2,8 @@
 #include <cstring>
 #include <iomanip>
 #include <iostream>
+#include <queue>
+#include <set>
 #include <vector>
 #include "../FileHandling/FileHandler.h"
 #include "../POD/File.h"
@@ -17,17 +19,47 @@
 
 Commands::Commands(IFileHandler &fileHandlerInstance, ILogger &loggerInstance)
     : _fileHandler(fileHandlerInstance), _logger(loggerInstance) {
-    commands[CRYPT] = [this](const FileInfo &file) { encrypt(file); };
-    commands[DECRYPT] = [this](const FileInfo &file) { decrypt(file); };
+    commands[CRYPT] = [this](const userInput &file) { encrypt(file); };
+    commands[DECRYPT] = [this](const userInput &file) { decrypt(file); };
+    commands[COMPRESS] = [this](const userInput &file) {compress(file);};
 }
 
-void Commands::encrypt(const FileInfo &file) {
+/*
+ *   TODO
+ *      Go through file and count occurrence of word or char;
+ *      save to map e.g (word -> occurrence);
+ *      use huffman tree on map;
+ *      use bit codes from huffman tree to remap the words with the bit codes;
+ *      save a "dictionary" of the code -> word for decompression;
+ */
+void Commands::compress(const userInput &file) {
+    RenderCmd::WriteOut("testing compress method of commands\n");
+    auto occurrences = CountCharOccurrences(file.filename);
+    int n = 0;
+    for (const auto &[key, value] : occurrences) {
+        std::cout << n << " Key " << key << " occurrence " << value << std::endl;
+        n++;
+    }
+}
+
+std::unordered_map<char, int> Commands::CountCharOccurrences(const std::string &filename) {
+    const auto filedata = _fileHandler.readFromFile(filename);
+
+    std::unordered_map<char, int> occurrences;
+    for (const auto &data : filedata) {
+        if (data != '\r') occurrences[data]++;
+    }
+    return occurrences;
+}
+
+
+void Commands::encrypt(const userInput &file) {
     _logger.log(LogLevel::INFO, std::string(EncryptionOutput::logEncryptStart));
 
     RenderCmd::WriteOut(EncryptionOutput::encryptCurrent);
 
 
-    auto fileContents = _fileHandler.readFromFile(file.fileName);
+    auto fileContents = _fileHandler.readFromFile(file.filename);
     auto plaintext = fileContents.data();
     int plaintext_len = static_cast<int>(fileContents.size());
 
@@ -52,17 +84,17 @@ void Commands::encrypt(const FileInfo &file) {
     out.insert(out.end(), iv, iv + 16);
     out.insert(out.end(), ciphertext.data(), ciphertext.data() + ciphertext_len);
     out.insert(out.end(), tag, tag + 16);
-    _fileHandler.writeToFile(file.fileName, out);
+    _fileHandler.writeToFile(file.filename, out);
 
     RenderCmd::WriteOut(EncryptionOutput::encryptSuccess);
 }
 
-void Commands::decrypt(const FileInfo &file) {
+void Commands::decrypt(const userInput &file) {
     _logger.log(LogLevel::INFO, std::string(DecryptionOutput::logDecryptStart));
 
     RenderCmd::WriteOut(DecryptionOutput::decryptCurrent);
 
-    auto fileContents = _fileHandler.readFromFile(file.fileName);
+    auto fileContents = _fileHandler.readFromFile(file.filename);
 
     if (fileContents.size() < 32) {
         RenderCmd::WriteError(EncryptDecryptError::notValidOrCorrupt);
@@ -97,7 +129,7 @@ void Commands::decrypt(const FileInfo &file) {
         plaintext.data(),
         plaintext.data() + plaintext_len);
 
-    _fileHandler.writeToFile(file.fileName, out);
+    _fileHandler.writeToFile(file.filename, out);
 
 
     RenderCmd::WriteOut(DecryptionOutput::decryptSuccess);

@@ -13,18 +13,22 @@ public:
 
     Commands(IFileHandler &fileHandlerInstance, ILogger &loggerInstance);
 
-    void executeCommand(const CommandType type, FileInfo &file) override {
+    void executeCommand(const CommandType type, userInput &file) override {
         if (commands.contains(type)) commands[type](file);
     }
 
 private:
     std::vector<unsigned char> hash(const std::string &password);
 
+    void compress(const userInput &file);
+
+    std::unordered_map<char, int> CountCharOccurrences(const std::string &filename);
+
     bool hashPassword(const unsigned char *data, size_t data_len, unsigned char *out_digest, unsigned int *out_len);
 
-    void encrypt(const FileInfo &file);
+    void encrypt(const userInput &file);
 
-    void decrypt(const FileInfo &file);
+    void decrypt(const userInput &file);
 
     bool gcm_encrypt(const unsigned char *plaintext,
                      int plaintext_len,

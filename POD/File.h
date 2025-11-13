@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include <string>
 
-struct FileInfo {
-    std::string fileName;
+struct userInput {
+    std::string filename;
     std::string password;
 };
