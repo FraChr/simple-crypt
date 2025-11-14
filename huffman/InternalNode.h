@@ -1,13 +1,19 @@
-﻿//
-// Created by Frach on 14/11/2025.
-//
+﻿#pragma once
+#include "LeafNode.h"
 
-#ifndef SIMPLECRYPTOGRAPH_INTERNALNODE_H
-#define SIMPLECRYPTOGRAPH_INTERNALNODE_H
+class InternalNode : public INode {
+public:
+    InternalNode(INode *left, INode *right, const int weight)
+        : _weight(weight), _left(left), _right(right) {
+    };
 
+    INode *left() { return _left; }
+    INode *right() { return _right; }
+    int weight() override { return _weight; }
+    bool isLeaf() override { return false; }
 
-class InternalNode {
+private:
+    int _weight;
+    INode *_left;
+    INode *_right;
 };
-
-
-#endif //SIMPLECRYPTOGRAPH_INTERNALNODE_H

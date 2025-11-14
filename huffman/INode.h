@@ -1,8 +1,8 @@
-﻿//
-// Created by Frach on 14/11/2025.
-//
+﻿#pragma once
 
-#ifndef SIMPLECRYPTOGRAPH_INODE_H
-#define SIMPLECRYPTOGRAPH_INODE_H
-
-#endif //SIMPLECRYPTOGRAPH_INODE_H
+class INode {
+    public:
+        virtual ~INode() = default;
+        virtual bool isLeaf() = 0;
+        virtual int weight() = 0;
+};

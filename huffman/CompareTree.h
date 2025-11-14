@@ -1,8 +1,9 @@
-﻿//
-// Created by Frach on 14/11/2025.
-//
+﻿#pragma once
+#include "INode.h"
+#include "Tree.h"
 
-#ifndef SIMPLECRYPTOGRAPH_COMPARETREE_H
-#define SIMPLECRYPTOGRAPH_COMPARETREE_H
-
-#endif //SIMPLECRYPTOGRAPH_COMPARETREE_H
+struct CompareTree {
+    bool operator()(const Tree *a, const Tree *b) const {
+        return a->Weight() > b->Weight();
+    }
+};

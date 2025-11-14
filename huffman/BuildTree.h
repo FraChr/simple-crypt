@@ -1,8 +1,17 @@
-﻿//
-// Created by Frach on 14/11/2025.
-//
+﻿#pragma once
+#include <queue>
 
-#ifndef SIMPLECRYPTOGRAPH_BUILDTREE_H
-#define SIMPLECRYPTOGRAPH_BUILDTREE_H
+#include "CompareTree.h"
+#include "Tree.h"
 
-#endif //SIMPLECRYPTOGRAPH_BUILDTREE_H
+static Tree* buildTree(std::priority_queue<Tree*, std::vector<Tree*>, CompareTree> &pq) {
+
+    while (pq.size() > 1) {
+        Tree* l = pq.top(); pq.pop();
+        Tree* r = pq.top(); pq.pop();
+        /*Tree* combined(l->root(), r->root());*/
+        Tree* combined = new Tree(l->root(), r->root());
+        pq.push(combined);
+    }
+    return pq.top();
+};

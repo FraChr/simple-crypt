@@ -1,13 +1,13 @@
-﻿//
-// Created by Frach on 14/11/2025.
-//
+﻿#pragma once
+#include "INode.h"
 
-#ifndef SIMPLECRYPTOGRAPH_LEAFNODE_H
-#define SIMPLECRYPTOGRAPH_LEAFNODE_H
-
-
-class LeafNode {
+class LeafNode : public INode {
+    public:
+        LeafNode(const char element, const int weight) : _element(element), _weight(weight) {};
+        char value() const {return _element;}
+        int weight() override {return _weight;}
+        bool isLeaf() override {return true;}
+    private:
+        char _element;
+        int _weight;
 };
-
-
-#endif //SIMPLECRYPTOGRAPH_LEAFNODE_H
