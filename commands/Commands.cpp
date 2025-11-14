@@ -42,14 +42,15 @@ void Commands::compress(const userInput &file) {
     }
 }
 
-std::unordered_map<char, int> Commands::CountCharOccurrences(const std::string &filename) {
+std::unordered_map<unsigned char, int> Commands::CountCharOccurrences(const std::string &filename) {
     const auto filedata = _fileHandler.readFromFile(filename);
 
-    std::unordered_map<char, int> occurrences;
+    std::unordered_map<unsigned char, int> occurrences;
     for (const auto &data : filedata) {
         if (data != '\r') occurrences[data]++;
     }
     return occurrences;
+
 }
 
 

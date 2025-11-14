@@ -22,7 +22,7 @@ private:
 
     void compress(const userInput &file);
 
-    std::unordered_map<char, int> CountCharOccurrences(const std::string &filename);
+    std::unordered_map<unsigned char, int> CountCharOccurrences(const std::string &filename);
 
     bool hashPassword(const unsigned char *data, size_t data_len, unsigned char *out_digest, unsigned int *out_len);
 

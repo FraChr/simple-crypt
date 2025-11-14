@@ -1,6 +1,6 @@
 ﻿#include "SimpleCrypt.h"
 
-#include "Builder.h"
+#include "Builder/Builder.h"
 
 SimpleCrypt::SimpleCrypt(ArgsHandler& argsHandler, const int argc, char *argv[])
         : _argsHandler(argsHandler), _argc(argc), _argv(argv) {};

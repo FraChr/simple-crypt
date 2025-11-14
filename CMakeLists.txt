@@ -25,10 +25,18 @@ add_executable(SimpleCryptograph main.cpp
         Logger/Logger.cpp
         Logger/Logger.h
         Interfaces/ILogger.h
-        Builder.cpp
-        Builder.h
+        Builder/Builder.cpp
+        Builder/Builder.h
         SimpleCrypt.cpp
         SimpleCrypt.h
+        huffman/INode.h
+        huffman/LeafNode.cpp
+        huffman/LeafNode.h
+        huffman/InternalNode.cpp
+        huffman/InternalNode.h
+        huffman/CompareTree.h
+        huffman/Tree.h
+        huffman/BuildTree.h
 )
 
 target_link_libraries(SimpleCryptograph PRIVATE OpenSSL::SSL OpenSSL::Crypto)
