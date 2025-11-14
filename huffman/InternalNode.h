@@ -1,0 +1,13 @@
+﻿//
+// Created by Frach on 14/11/2025.
+//
+
+#ifndef SIMPLECRYPTOGRAPH_INTERNALNODE_H
+#define SIMPLECRYPTOGRAPH_INTERNALNODE_H
+
+
+class InternalNode {
+};
+
+
+#endif //SIMPLECRYPTOGRAPH_INTERNALNODE_H

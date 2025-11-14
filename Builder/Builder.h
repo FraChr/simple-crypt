@@ -1,10 +1,10 @@
 ﻿#pragma once
 
-#include "SimpleCrypt.h"
-#include "ArgumentHandler/ArgsHandler.h"
-#include "commands/Commands.h"
-#include "FileHandling/FileHandler.h"
-#include "Logger/Logger.h"
+#include "../SimpleCrypt.h"
+#include "../ArgumentHandler/ArgsHandler.h"
+#include "../commands/Commands.h"
+#include "../FileHandling/FileHandler.h"
+#include "../Logger/Logger.h"
 
 class Builder {
     public:

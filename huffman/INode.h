@@ -1,0 +1,8 @@
+﻿//
+// Created by Frach on 14/11/2025.
+//
+
+#ifndef SIMPLECRYPTOGRAPH_INODE_H
+#define SIMPLECRYPTOGRAPH_INODE_H
+
+#endif //SIMPLECRYPTOGRAPH_INODE_H

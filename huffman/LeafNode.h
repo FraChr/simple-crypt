@@ -1,0 +1,13 @@
+﻿//
+// Created by Frach on 14/11/2025.
+//
+
+#ifndef SIMPLECRYPTOGRAPH_LEAFNODE_H
+#define SIMPLECRYPTOGRAPH_LEAFNODE_H
+
+
+class LeafNode {
+};
+
+
+#endif //SIMPLECRYPTOGRAPH_LEAFNODE_H

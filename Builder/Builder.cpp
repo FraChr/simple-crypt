@@ -1,5 +1,5 @@
 ﻿#include "Builder.h"
-#include "SimpleCrypt.h"
+#include "../SimpleCrypt.h"
 
 Builder::Builder(const int argc, char *argv[])
         :_fileHandler(), _logger(_fileHandler), _cmd(_fileHandler, _logger), _argsHandler(_cmd),

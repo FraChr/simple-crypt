@@ -1,0 +1,8 @@
+﻿//
+// Created by Frach on 14/11/2025.
+//
+
+#ifndef SIMPLECRYPTOGRAPH_TREE_H
+#define SIMPLECRYPTOGRAPH_TREE_H
+
+#endif //SIMPLECRYPTOGRAPH_TREE_H
