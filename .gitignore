@@ -1,3 +1,5 @@
 .idea
 *.exe
 overview.txt
+LearningHuffman.cpp
+bitwiseOperations.cpp

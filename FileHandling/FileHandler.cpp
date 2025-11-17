@@ -15,6 +15,7 @@ void FileHandler::writeToFile(const std::string &filename, const std::vector<uns
     auto totalFileSize = static_cast<std::streamsize>(value.size());
     char fileChunk[4096];
     std::streamsize totalWritten = 0;
+
     while (totalWritten < totalFileSize) {
         std::streamsize remaining = totalFileSize - totalWritten;
         std::streamsize chunkSize = std::min(remaining, static_cast<std::streamsize>(sizeof(fileChunk)));
@@ -27,31 +28,6 @@ void FileHandler::writeToFile(const std::string &filename, const std::vector<uns
     resetPreviousPercent();
 }
 
-void FileHandler::progressPercent(
-    const std::streamsize totalProcessed,
-    const std::streamsize totalFileSize,
-    std::string prompt)
-{
-    unsigned int percentProcessed = totalProcessed * 100 / totalFileSize;
-
-
-    if (percentProcessed > _previousPercent) {
-        std::string msg = std::format("\r{}: {} %", prompt, percentProcessed);
-        RenderCmd::WriteOut(msg);
-        _previousPercent = percentProcessed;
-    }
-}
-
-
-template<typename T>
-bool FileHandler::fileIsOpenCheck(const T &file) {
-    if (!file.is_open()) {
-        RenderCmd::WriteError(FileError::FileNotOpen);
-        return true;
-    }
-    return false;
-}
-
 void FileHandler::writeToFile(const std::string &filename, const std::string &value) {
     std::ofstream file(filename, std::ofstream::app);
     if (!file.is_open()) {
@@ -61,20 +37,9 @@ void FileHandler::writeToFile(const std::string &filename, const std::string &va
     file.write(value.c_str(), value.length());
 }
 
-bool FileHandler::fileExists(const std::string &filename) {
-    return std::filesystem::exists(filename);
-}
-
-
 std::vector<unsigned char> FileHandler::readFromFile(const std::string &filename) {
     std::ifstream file(filename, std::ios::binary);
     if (fileIsOpenCheck(file)) return {};
-
-    auto start = std::chrono::high_resolution_clock::now();
-
-    // Non buffered read time on 10gb .txt file 409.665 seconds
-    // pre mem allocated vector with Buffered read time on 10gb .txt file 158.031 seconds
-    // Difference = 251.634 seconds
 
     file.seekg(0, std::ios::end);
     const auto totalFileSize = file.tellg();
@@ -94,11 +59,36 @@ std::vector<unsigned char> FileHandler::readFromFile(const std::string &filename
         progressPercent(totalRead, totalFileSize, "Reading");
     }
 
-    auto end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> elapsed_seconds = end - start;
-    std::cout << "\nelapsed time: " << elapsed_seconds.count() << " seconds\n";
     resetPreviousPercent();
     return totalFile;
+}
+
+bool FileHandler::fileExists(const std::string &filename) {
+    return std::filesystem::exists(filename);
+}
+
+void FileHandler::progressPercent(
+    const std::streamsize totalProcessed,
+    const std::streamsize totalFileSize,
+    std::string prompt)
+{
+    unsigned int percentProcessed = totalProcessed * 100 / totalFileSize;
+
+
+    if (percentProcessed > _previousPercent) {
+        std::string msg = std::format("\r{}: {} %", prompt, percentProcessed);
+        RenderCmd::WriteOut(msg);
+        _previousPercent = percentProcessed;
+    }
+}
+
+template<typename T>
+bool FileHandler::fileIsOpenCheck(const T &file) {
+    if (!file.is_open()) {
+        RenderCmd::WriteError(FileError::FileNotOpen);
+        return true;
+    }
+    return false;
 }
 
 

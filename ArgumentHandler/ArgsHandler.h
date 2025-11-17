@@ -26,7 +26,7 @@ private:
         UnknownOptionError = '?',
     };
 
-    std::map<Option, std::function<void(const char *)> > CreateHandlers(CommandType &ct, userInput &file);
+    std::map<Option, std::function<void(const char *)> > CreateHandlers(CommandType &ct, userInput &userInput);
 
-    ICommands &commands;
+    ICommands &_commands;
 };

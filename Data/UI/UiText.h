@@ -10,9 +10,6 @@ struct Support {
     |   This help text:                                    |
     |   -h                                                 |
     ========================================================
-    |   Create password for encryption:                    |
-    |   -v -p [password]                                   |
-    ========================================================
     |   File encryption:                                   |
     |   -c -f [filename.ext] -p [password]                 |
     ========================================================

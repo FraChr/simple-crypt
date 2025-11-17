@@ -9,7 +9,7 @@ public:
 
     INode *left() { return _left; }
     INode *right() { return _right; }
-    int weight() override { return _weight; }
+    int Weight() override { return _weight; }
     bool isLeaf() override { return false; }
 
 private:

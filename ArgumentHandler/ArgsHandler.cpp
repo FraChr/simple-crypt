@@ -8,14 +8,14 @@
 #include "../commands/Commands.h"
 #include "../Render/RenderCmd.h"
 
-ArgsHandler::ArgsHandler(ICommands &cmdInstance) : commands(cmdInstance) {}
+ArgsHandler::ArgsHandler(ICommands &cmdInstance) : _commands(cmdInstance) {}
 
 void ArgsHandler::Handle(const int &argc, char *argv[]) {
     std::string commandName;
     CommandType commandType{};
-    userInput file;
+    userInput userInput;
 
-    auto handlers = CreateHandlers(commandType, file);
+    auto handlers = CreateHandlers(commandType, userInput);
 
     int opt = 0;
     while ((opt = getopt(argc, argv, options)) != -1) {
@@ -28,22 +28,18 @@ void ArgsHandler::Handle(const int &argc, char *argv[]) {
     }
 
     if (commandType != NONE) {
-        commands.executeCommand(commandType, file);
+        _commands.executeCommand(commandType, userInput);
     }
-
-    // for debuging remove for production
-    /*for (; optind < argc; optind++) {
-        RenderCmd::WriteOut("extra args: ");
-    }*/
 }
 
 std::map<ArgsHandler::Option, std::function<void(const char *)> > ArgsHandler::CreateHandlers(
-    CommandType &ct, userInput &file) {
-    std::map<Option, std::function<void(const char *)> > handlers;
+    CommandType &ct, userInput &userInput) {
+    std::map<Option, std::function<void(const char *)>> handlers;
+
     handlers[Option::ENCRYPT] = [&ct](const char *) { ct = CRYPT; };
     handlers[Option::HELP] = [&](const char *) { RenderCmd::WriteOut(Support::help); };
-    handlers[Option::PASSWORD] = [&file](const char *arg) { file.password = optarg; };
-    handlers[Option::FILE] = [&file](const char *arg) { file.filename = optarg; };
+    handlers[Option::PASSWORD] = [&userInput](const char *arg) { userInput.password = optarg; };
+    handlers[Option::FILE] = [&userInput](const char *arg) { userInput.filename = optarg; };
     handlers[Option::DECRYPT] = [&ct](const char *) { ct = DECRYPT; };
     handlers[Option::DRAW] = [](const char *) { RenderCmd::WriteOut(Art::drawCake); };
     handlers[Option::COMPRESS] = [&ct](const char *) {ct = COMPRESS; };

@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <map>
 #include <string>
+#include <openssl/types.h>
 
 #include "CommandTypes.h"
 #include "../Interfaces/ICommands.h"
@@ -26,9 +27,9 @@ private:
 
     bool hashPassword(const unsigned char *data, size_t data_len, unsigned char *out_digest, unsigned int *out_len);
 
-    void encrypt(const userInput &file);
+    void encrypt(const userInput &userInput);
 
-    void decrypt(const userInput &file);
+    void decrypt(const userInput &userInput);
 
     bool gcm_encrypt(const unsigned char *plaintext,
                      int plaintext_len,
@@ -47,7 +48,10 @@ private:
                      int &plaintext_len
     );
 
+
     void HandleError() const;
+    void HandleError(EVP_CIPHER_CTX *ctx) const;
+    void HandleError(EVP_MD_CTX *mctx) const;
 
     IFileHandler &_fileHandler;
     ILogger &_logger;

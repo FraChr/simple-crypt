@@ -10,13 +10,13 @@ class Tree {
         }
 
         Tree(INode *left, INode *right) {
-            if (left->weight() > right->weight()) std::swap(left, right);
-            int combinedWeight = left->weight() + right->weight();
+            if (left->Weight() > right->Weight()) std::swap(left, right);
+            int combinedWeight = left->Weight() + right->Weight();
             _root = new InternalNode(left, right, combinedWeight);
         }
 
         INode *root() const {return _root;}
-        int Weight() const {return _root->weight();}
+        int Weight() const {return _root->Weight();}
 
     private:
         INode* _root;

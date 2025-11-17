@@ -29,6 +29,12 @@ add_executable(SimpleCryptograph main.cpp
         Builder/Builder.h
         SimpleCrypt.cpp
         SimpleCrypt.h
+)
+
+target_link_libraries(SimpleCryptograph PRIVATE OpenSSL::SSL OpenSSL::Crypto)
+set_target_properties(SimpleCryptograph PROPERTIES OUTPUT_NAME cp)
+
+add_executable(SimpleCryptographHuffman LearningHuffman.cpp
         huffman/INode.h
         huffman/LeafNode.cpp
         huffman/LeafNode.h
@@ -39,10 +45,7 @@ add_executable(SimpleCryptograph main.cpp
         huffman/BuildTree.h
 )
 
-target_link_libraries(SimpleCryptograph PRIVATE OpenSSL::SSL OpenSSL::Crypto)
-set_target_properties(SimpleCryptograph PROPERTIES OUTPUT_NAME cp)
-
-
+add_executable(SimpleCryptographBitwise bitwiseOperations.cpp)
 
 add_executable(SimpleCryptographTests Tests/test.cpp
         Interfaces/IFileHandler.h
