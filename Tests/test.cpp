@@ -1,5 +1,7 @@
 ﻿#include <fstream>
 #include <catch2/catch_test_macros.hpp>
+#include <openssl/rand.h>
+
 #include "TestMocks.h"
 #include "../commands/Commands.h"
 #include "../FileHandling/FileHandler.h"
@@ -43,4 +45,32 @@ TEST_CASE("Logger") {
         REQUIRE(mockFileHandler.writtenData.front() == '[');
 
     }
+}
+
+TEST_CASE("Password hashing/salt") {
+    /*Commands m_commands(MockFileHandler, MockLogger);*/
+    MockFileHandler mockFileHandler;
+    MockLogger mockLogger;
+    Commands command(mockFileHandler, mockLogger);
+
+
+
+    std::string psw = "test";
+    std::vector<unsigned char> salt(16);
+    unsigned int iter = 80000;
+    std::vector<unsigned char> key(32);
+
+    RAND_bytes(salt.data(), salt.size());
+
+    auto result = command.kdf_passwd(psw, salt, iter, key);
+
+    if (!result) {
+        std::cout << "ERROR\n";
+    }
+
+    for (const auto &c : key) {
+        std::cout << c;
+    }
+    std::cout << std::endl;
+
 }

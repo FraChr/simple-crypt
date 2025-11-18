@@ -1,6 +1,8 @@
 ﻿#pragma once
+#include <iostream>
 #include <string>
 #include "../Interfaces/IFileHandler.h"
+#include "../Interfaces/ILogger.h"
 
 class MockFileHandler final : public IFileHandler {
 public:
@@ -22,4 +24,11 @@ public:
     std::vector<unsigned char> readFromFile(const std::string &filename) override {
         return{};
     };
+};
+
+class MockLogger final : public ILogger {
+    public:
+    void log(LogLevel level, const std::string &message) {
+        std::cout << "ERROR\n";
+    }
 };
