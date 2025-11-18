@@ -32,7 +32,7 @@ add_executable(SimpleCryptograph main.cpp
 )
 
 target_link_libraries(SimpleCryptograph PRIVATE OpenSSL::SSL OpenSSL::Crypto)
-set_target_properties(SimpleCryptograph PROPERTIES OUTPUT_NAME cp)
+#[[set_target_properties(SimpleCryptograph PROPERTIES OUTPUT_NAME cp)]]
 
 add_executable(SimpleCryptographHuffman LearningHuffman.cpp
         huffman/INode.h
@@ -46,6 +46,7 @@ add_executable(SimpleCryptographHuffman LearningHuffman.cpp
 )
 
 add_executable(SimpleCryptographBitwise bitwiseOperations.cpp)
+target_link_libraries(SimpleCryptographBitwise PRIVATE OpenSSL::SSL OpenSSL::Crypto)
 
 add_executable(SimpleCryptographTests Tests/test.cpp
         Interfaces/IFileHandler.h
@@ -58,6 +59,9 @@ add_executable(SimpleCryptographTests Tests/test.cpp
         Logger/Logger.h
         Interfaces/IFileHandler.h
         Interfaces/ILogger.h
+        commands/CommandTypes.h
+        commands/Commands.cpp
+        commands/Commands.h
 )
 
 target_link_libraries(SimpleCryptographTests PRIVATE
