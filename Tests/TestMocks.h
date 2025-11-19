@@ -29,6 +29,6 @@ public:
 class MockLogger final : public ILogger {
     public:
     void log(LogLevel level, const std::string &message) {
-        std::cout << "ERROR\n";
+        std::cout << "Error Level: " << message << '\n';
     }
 };

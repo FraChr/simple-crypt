@@ -77,13 +77,26 @@ void Commands::encrypt(const userInput &userInput) {
     auto plaintext = fileContents.data();
     int plaintext_len = static_cast<int>(fileContents.size());
 
-    std::vector<unsigned char> key = hash(userInput.password);
+    /*std::vector<unsigned char> key = hash(userInput.password);*/
 
     /*const int key2_len = 32;*/
-    /*hashAndSalt(userInput.password, userInput);*/
     /*std::vector<unsigned char> key2 = userInput.key;
     std::vector<unsigned char> salt(32);*/
 
+    _logger.log(LogLevel::INFO, "Before calling hashAndSalt");
+
+
+
+
+    const auto [_salt, _key] = hashAndSalt(userInput.password);
+    if (_salt.empty() || _key.empty()) {
+        _logger.log(LogLevel::ERROR, "Failed to hash password");
+        return;
+    }
+    _logger.log(LogLevel::INFO, "After calling hashAndSalt");
+
+    std::vector<unsigned char> salt = _salt;
+    std::vector<unsigned char> key2 = _key;
 
 
     std::vector<unsigned char> ciphertext(fileContents.size() + tag_len);
@@ -94,15 +107,17 @@ void Commands::encrypt(const userInput &userInput) {
     std::vector<unsigned char> tag(tag_len);
 
 
+
     const bool result = gcm_encrypt(
         plaintext,
         plaintext_len,
-        key.data(),
+        key2.data(),
         iv.data(),
         ciphertext.data(),
         ciphertext_len,
         tag.data()
     );
+
 
     if (!result) {
         RenderCmd::WriteError(EncryptDecryptError::encryptionFailure);
@@ -111,7 +126,7 @@ void Commands::encrypt(const userInput &userInput) {
     }
 
     std::vector<unsigned char> out;
-    /*out.insert(out.end(), salt.begin(), salt.end());*/
+    out.insert(out.end(), salt.begin(), salt.end());
     out.insert(out.end(), iv.begin(), iv.end());
     out.insert(out.end(), ciphertext.data(), ciphertext.data() + ciphertext_len);
     out.insert(out.end(), tag.begin(), tag.end());
@@ -125,7 +140,8 @@ void Commands::decrypt(const userInput &userInput) {
     const EVP_CIPHER *cipher = EVP_aes_256_gcm();
     const int iv_len = EVP_CIPHER_iv_length(cipher);
     const int tag_len = 16;
-    /*const int key2_len = 32;*/
+    const int salt_len = 16;
+    const int key2_len = 32;
 
     _logger.log(LogLevel::INFO, std::string(DecryptionOutput::logDecryptStart));
 
@@ -133,26 +149,30 @@ void Commands::decrypt(const userInput &userInput) {
 
     auto fileContents = _fileHandler.readFromFile(userInput.filename);
 
-    if (fileContents.size() < iv_len + tag_len) {
+    if (fileContents.size() < salt_len + iv_len + tag_len) {
         RenderCmd::WriteError(EncryptDecryptError::notValidOrCorrupt);
         return;
     }
 
-    /*std::vector<unsigned char> key2(fileContents.begin(), fileContents.end() + key2_len);*/
+    /*std::vector<unsigned char> key2(fileContents.begin(), fileContents.end() + key2.size());*/
+    std::vector<unsigned char> salt(fileContents.begin(), fileContents.begin() + salt_len);
 
-    std::vector iv(fileContents.begin(), fileContents.begin() + iv_len);
+    /*std::vector iv(fileContents.begin(), fileContents.begin() + iv_len);*/
+    std::vector iv(fileContents.begin() + salt.size(), fileContents.begin() + salt.size() + iv_len);
 
     std::vector tag(fileContents.end() - tag_len, fileContents.end());
 
-    int ciphertext_len = fileContents.size() - iv_len - tag_len;
+    int ciphertext_len = fileContents.size() - salt.size() - iv_len - tag_len;
     std::vector ciphertext(
-        fileContents.begin() + iv_len,
-        fileContents.begin() + iv_len + ciphertext_len
+        fileContents.begin() + salt.size() + iv_len,
+        fileContents.begin() + salt.size() + iv_len + ciphertext_len
     );
 
-    /*VerifyPwd(key2);*/
+    /*auto keyRes = hashAndSalt(userInput.password);*/
 
-    std::vector<unsigned char> key = hash(userInput.password);
+    auto key2 = VerifyPwd(salt, userInput.password);
+
+    /*std::vector<unsigned char> key = hash(userInput.password);*/
 
     std::vector<unsigned char> plaintext(ciphertext_len);
     int plaintext_len = 0;
@@ -160,7 +180,7 @@ void Commands::decrypt(const userInput &userInput) {
     auto result = gcm_decrypt(
         ciphertext.data(),
         ciphertext_len,
-        key.data(),
+        key2.data(),
         iv.data(),
         tag.data(),
         plaintext.data(),
@@ -345,7 +365,7 @@ bool Commands::hashPassword(const unsigned char *data,
 
 bool Commands::kdf_passwd(
     std::string password,
-    std::vector<unsigned char> salt,
+    std::vector<unsigned char> &salt,
     unsigned int iteration,
     std::vector<unsigned char> &key
     )
@@ -373,7 +393,7 @@ bool Commands::kdf_passwd(
         return false;
     }
 
-    std::string x = "SHA256";
+    std::string hashAlgorithm = "SHA256";
 
     /* Set Password */
     *p++ = OSSL_PARAM_construct_octet_string(OSSL_KDF_PARAM_PASSWORD, password.data(), password.size());
@@ -382,7 +402,7 @@ bool Commands::kdf_passwd(
     /* Set iteration count (default 2048) */
     *p++ = OSSL_PARAM_construct_uint(OSSL_KDF_PARAM_ITER, &iteration);
     /* Set the underlying hash functionused to derive the key */
-    *p++ = OSSL_PARAM_construct_utf8_string(OSSL_KDF_PARAM_DIGEST, x.data(), 0);
+    *p++ = OSSL_PARAM_construct_utf8_string(OSSL_KDF_PARAM_DIGEST, hashAlgorithm.data(), 0);
 
     *p = OSSL_PARAM_construct_end();
 
@@ -399,48 +419,48 @@ bool Commands::kdf_passwd(
     return true;
 
 }
-/*std::vector<unsigned char>*/
-/*void Commands::hashAndSalt(const std::string &password, userInput user_input) {
-    /*std::string psw = "test";#1#
-    _logger.log(LogLevel::INFO, "Hash and Salting method");
+
+std::pair<std::vector<unsigned char>, std::vector<unsigned char>> Commands::hashAndSalt(const std::string &password) {
+    _logger.log(LogLevel::INFO, "starting Hash and Salting method");
+
     std::vector<unsigned char> salt(16);
     unsigned int iter = 80000;
     std::vector<unsigned char> key(32);
 
-    RAND_bytes(salt.data(), salt.size());
+    if(RAND_bytes(salt.data(), 16) != 1) {
+        _logger.log(LogLevel::ERROR, "Failed to generate salt");
+        return {{},{}};
+    };
 
     auto result = kdf_passwd(password, salt, iter, key);
 
     if (!result) {
-        RenderCmd::WriteError("Something went wrong with password");
         _logger.log(LogLevel::ERROR, "Something went Wrong in hashAndSalt");
-        /*return {};#1#
+        return {{},{}};
     }
+    return {salt, key};
+}
 
-    /*user_input.key = key;
-    user_input.salt = salt;#1#
-
-}*/
-
-/*bool Commands::VerifyPwd(const std::vector<unsigned char> &saltFromDoc) {
-    if (saltFromDoc.empty()) return false;
+std::vector<unsigned char> Commands::VerifyPwd(const std::vector<unsigned char> &saltFromDoc, const std::string &password) {
+    if (saltFromDoc.empty()) {
+        _logger.log(LogLevel::ERROR, "Salt is empty");
+        return {};
+    }
     _logger.log(LogLevel::INFO, "Verifying pwd");
-    std::string psw = "test";
     std::vector<unsigned char> salt(16);
     unsigned int iter = 80000;
     std::vector<unsigned char> key(32);
 
     salt = saltFromDoc;
 
-    auto result = kdf_passwd(psw, salt, iter, key);
+    auto result = kdf_passwd(password, salt, iter, key);
 
     if (!result) {
-        RenderCmd::WriteError("Something went wrong with password");
         _logger.log(LogLevel::ERROR, "Something went Wrong in hashAndSalt");
-        return false;
+        return {};
     }
-    return true;
-}*/
+    return key;
+}
 
 std::vector<unsigned char> Commands::hash(const std::string &password) {
     unsigned char hashBytes[SHA256_DIGEST_LENGTH];

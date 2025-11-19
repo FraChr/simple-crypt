@@ -21,7 +21,7 @@ public:
         if (commands.contains(type)) commands[type](file);
     }
 
-    bool kdf_passwd(std::string password, std::vector<unsigned char> salt, unsigned int iteration, std::vector<unsigned char> &key);
+    bool kdf_passwd(std::string password, std::vector<unsigned char> &salt, unsigned int iteration, std::vector<unsigned char> &key);
 private:
     std::vector<unsigned char> hash(const std::string &password);
 
@@ -53,8 +53,9 @@ private:
                      int &plaintext_len
     ) const;
 
-    void hashAndSalt(const std::string &password, userInput user_input);
-    bool VerifyPwd(const std::vector<unsigned char> &saltFromDoc);
+    std::pair<std::vector<unsigned char>, std::vector<unsigned char>>
+    hashAndSalt(const std::string &password);
+    std::vector<unsigned char> VerifyPwd(const std::vector<unsigned char> &saltFromDoc, const std::string &password);
 
     void HandleError() const;
     void HandleError(EVP_CIPHER_CTX *ctx) const;
@@ -63,5 +64,6 @@ private:
 
     IFileHandler &_fileHandler;
     ILogger &_logger;
-
+    /*std::vector<unsigned char> _salt;
+    std::vector<unsigned char> _key;*/
 };
