@@ -1,8 +1,14 @@
-﻿//
-// Created by Frach on 20/11/2025.
-//
+﻿#pragma once
+#include <vector>
 
-#ifndef SIMPLECRYPTOGRAPH_IDECRYPT_H
-#define SIMPLECRYPTOGRAPH_IDECRYPT_H
-
-#endif //SIMPLECRYPTOGRAPH_IDECRYPT_H
+class IDecrypt {
+    public:
+        virtual ~IDecrypt() = default;
+        virtual bool decrypt(
+            const std::vector<unsigned char>& ciphertext,
+            const std::vector<unsigned char>& key,
+            std::vector<unsigned char>& iv,
+            std::vector<unsigned char>& tag,
+            std::vector<unsigned char>& plaintext
+            ) const = 0;
+};
