@@ -1,0 +1,13 @@
+﻿//
+// Created by Frach on 20/11/2025.
+//
+
+#ifndef SIMPLECRYPTOGRAPH_KDFDIGESTER_H
+#define SIMPLECRYPTOGRAPH_KDFDIGESTER_H
+
+
+class KdfDigester {
+};
+
+
+#endif //SIMPLECRYPTOGRAPH_KDFDIGESTER_H

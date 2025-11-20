@@ -1,0 +1,13 @@
+﻿//
+// Created by Frach on 20/11/2025.
+//
+
+#ifndef SIMPLECRYPTOGRAPH_DIGESTERSERVICE_H
+#define SIMPLECRYPTOGRAPH_DIGESTERSERVICE_H
+
+
+class DigesterService {
+};
+
+
+#endif //SIMPLECRYPTOGRAPH_DIGESTERSERVICE_H

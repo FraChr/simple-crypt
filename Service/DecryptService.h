@@ -1,0 +1,13 @@
+﻿//
+// Created by Frach on 20/11/2025.
+//
+
+#ifndef SIMPLECRYPTOGRAPH_DECRYPTSERVICE_H
+#define SIMPLECRYPTOGRAPH_DECRYPTSERVICE_H
+
+
+class DecryptService {
+};
+
+
+#endif //SIMPLECRYPTOGRAPH_DECRYPTSERVICE_H
