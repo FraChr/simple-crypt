@@ -1,13 +1,19 @@
-﻿//
-// Created by Frach on 20/11/2025.
-//
+﻿#pragma once
+#include <string>
+#include <vector>
 
-#ifndef SIMPLECRYPTOGRAPH_KDFDIGESTER_H
-#define SIMPLECRYPTOGRAPH_KDFDIGESTER_H
+#include "IKdfDigester.h"
+
+class KdfDigester : public IKdfDigester {
+public:
+    KdfDigester(const unsigned int &iterations = 2048);
+    bool DeriveKey(
+        std::string &password,
+        std::vector<unsigned char> &salt,
+        std::vector<unsigned char> &key
+        ) override;
 
 
-class KdfDigester {
+private:
+    unsigned int _iterations;
 };
-
-
-#endif //SIMPLECRYPTOGRAPH_KDFDIGESTER_H

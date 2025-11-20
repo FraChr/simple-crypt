@@ -1,8 +1,19 @@
-﻿//
-// Created by Frach on 20/11/2025.
-//
+﻿#pragma once
+#include <string>
+#include <vector>
 
-#ifndef SIMPLECRYPTOGRAPH_IKDFDIGESTER_H
-#define SIMPLECRYPTOGRAPH_IKDFDIGESTER_H
+class IKdfDigester {
+public:
+    virtual ~IKdfDigester() = default;
+    virtual bool DeriveKey(
+       std::string &password,
+       std::vector<unsigned char> &salt,
+       std::vector<unsigned char> &key
+       ) = 0;
 
-#endif //SIMPLECRYPTOGRAPH_IKDFDIGESTER_H
+    /*virtual bool VerifyDigest(
+        std::string &password,
+        std::vector<unsigned char> &salt,
+        std::vector<unsigned char> &key
+        ) = 0;*/
+};
