@@ -29,6 +29,19 @@ add_executable(SimpleCryptograph main.cpp
         Builder/Builder.h
         SimpleCrypt.cpp
         SimpleCrypt.h
+        AesGcmEncryptor/AesGcmCipher.cpp
+        AesGcmEncryptor/AesGcmCipher.h
+        AesGcmEncryptor/IEncrypt.h
+        Service/EncryptionService.cpp
+        Service/EncryptionService.h
+        KdfDigester/KdfDigester.cpp
+        KdfDigester/KdfDigester.h
+        KdfDigester/IKdfDigester.h
+        Service/DigesterService.cpp
+        Service/DigesterService.h
+        AesGcmEncryptor/IDecrypt.h
+        Service/DecryptService.cpp
+        Service/DecryptService.h
 )
 
 target_link_libraries(SimpleCryptograph PRIVATE OpenSSL::SSL OpenSSL::Crypto)
@@ -62,6 +75,18 @@ add_executable(SimpleCryptographTests Tests/test.cpp
         commands/CommandTypes.h
         commands/Commands.cpp
         commands/Commands.h
+        AesGcmEncryptor/AesGcmCipher.cpp
+        AesGcmEncryptor/AesGcmCipher.h
+        AesGcmEncryptor/IEncrypt.h
+        Service/EncryptionService.cpp
+        Service/EncryptionService.h
+        KdfDigester/KdfDigester.cpp
+        KdfDigester/KdfDigester.h
+        KdfDigester/IKdfDigester.h
+        Service/DigesterService.cpp
+        Service/DigesterService.h
+        Service/DecryptService.cpp
+        Service/DecryptService.h
 )
 
 target_link_libraries(SimpleCryptographTests PRIVATE

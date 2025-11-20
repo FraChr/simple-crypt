@@ -3,6 +3,7 @@
 #include <string>
 #include "../Interfaces/IFileHandler.h"
 #include "../Interfaces/ILogger.h"
+#include "../POD/File.h"
 
 class MockFileHandler final : public IFileHandler {
 public:
@@ -31,4 +32,9 @@ class MockLogger final : public ILogger {
     void log(LogLevel level, const std::string &message) {
         std::cout << "Error Level: " << message << '\n';
     }
+};
+
+struct MockUserInput : userInput{
+    std::string filename = "testData.txt";
+    std::string password = "test";
 };

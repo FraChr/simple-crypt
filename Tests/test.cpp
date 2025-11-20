@@ -3,9 +3,13 @@
 #include <openssl/rand.h>
 
 #include "TestMocks.h"
+#include "../AesGcmEncryptor/AesGcmCipher.h"
 #include "../commands/Commands.h"
 #include "../FileHandling/FileHandler.h"
+#include "../KdfDigester/KdfDigester.h"
 #include "../Logger/Logger.h"
+#include "../Service/DecryptService.h"
+#include "../Service/EncryptionService.h"
 
 
 TEST_CASE("File Handler", "[file]") {
@@ -105,4 +109,39 @@ TEST_CASE("Passwords") {
             std::cout << "Salt and generatedSalt is not equal";
         }
     }
+}
+
+TEST_CASE("Refactored Encryption") {
+
+    /*MockFileHandler mockFileHandler;*/
+    FileHandler fileHandler;
+    MockLogger mockLogger;
+    KdfDigester kdf_digester(8000);
+    AesGcmCipher aes_gcm_encryptor;
+    DigesterService digester_service(kdf_digester, mockLogger);
+    EncryptionService encryption_service(aes_gcm_encryptor, digester_service, fileHandler, mockLogger);
+    DecryptService decryptionService(aes_gcm_encryptor, digester_service, fileHandler, mockLogger);
+    MockUserInput mockUserInput;
+
+    /*
+    SECTION("Encryption") {
+        if(encryption_service.EncryptFile(mockUserInput)) {
+            std::cout << "Encrypted file was successful\n";
+        } else {
+            std::cout << "Encrypted file was unsuccessful\n";
+        }
+    }
+    */
+
+    SECTION("Decryption") {
+        if (decryptionService.DecryptFile(mockUserInput)) {
+            std::cout << "Decrypted file was successful\n";
+        } else {
+            std::cout << "Decrypted file was unsuccessful\n";
+        }
+
+
+    }
+
+
 }
