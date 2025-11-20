@@ -5,6 +5,7 @@
 #include <openssl/types.h>
 
 #include "CommandTypes.h"
+#include "../AesGcmEncryptor/IEncrypt.h"
 #include "../Interfaces/ICommands.h"
 #include "../Interfaces/IFileHandler.h"
 #include "../Interfaces/ILogger.h"
@@ -64,6 +65,4 @@ private:
 
     IFileHandler &_fileHandler;
     ILogger &_logger;
-    /*std::vector<unsigned char> _salt;
-    std::vector<unsigned char> _key;*/
 };

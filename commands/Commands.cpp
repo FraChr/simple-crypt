@@ -17,6 +17,8 @@
 
 #include "../Data/UI/ErrorText.h"
 #include "../Data/UI/UiText.h"
+#include "../AesGcmEncryptor/AesGcmCipher.h"
+#include "../AesGcmEncryptor/IEncrypt.h"
 #include "../Logger/Logger.h"
 #include "../Render/RenderCmd.h"
 
@@ -55,6 +57,7 @@ std::unordered_map<unsigned char, int> Commands::CountCharOccurrences(const std:
     }
     return occurrences;
 }
+
 
 /*
  *  EVP = electronic verification process
@@ -126,6 +129,10 @@ void Commands::encrypt(const userInput &userInput) {
     }
 
     std::vector<unsigned char> out;
+    out.push_back(salt.size());
+    out.push_back(iv.size());
+    out.push_back(tag.size());
+
     out.insert(out.end(), salt.begin(), salt.end());
     out.insert(out.end(), iv.begin(), iv.end());
     out.insert(out.end(), ciphertext.data(), ciphertext.data() + ciphertext_len);
@@ -138,9 +145,9 @@ void Commands::encrypt(const userInput &userInput) {
 
 void Commands::decrypt(const userInput &userInput) {
     const EVP_CIPHER *cipher = EVP_aes_256_gcm();
-    const int iv_len = EVP_CIPHER_iv_length(cipher);
+    /*const int iv_len = EVP_CIPHER_iv_length(cipher);
     const int tag_len = 16;
-    const int salt_len = 16;
+    const int salt_len = 16;*/
     const int key2_len = 32;
 
     _logger.log(LogLevel::INFO, std::string(DecryptionOutput::logDecryptStart));
@@ -149,23 +156,40 @@ void Commands::decrypt(const userInput &userInput) {
 
     auto fileContents = _fileHandler.readFromFile(userInput.filename);
 
+    const int salt_len = fileContents[0];
+    const int iv_len = fileContents[1];
+    const int tag_len = fileContents[2];
+
+    int offset = 3;
+
+
+
+
     if (fileContents.size() < salt_len + iv_len + tag_len) {
         RenderCmd::WriteError(EncryptDecryptError::notValidOrCorrupt);
         return;
     }
 
     /*std::vector<unsigned char> key2(fileContents.begin(), fileContents.end() + key2.size());*/
-    std::vector<unsigned char> salt(fileContents.begin(), fileContents.begin() + salt_len);
+    /*std::vector<unsigned char> salt(fileContents.begin(), fileContents.begin() + salt_len);*/
+    std::vector<unsigned char> salt(fileContents.begin() + offset, fileContents.begin() + offset + salt_len);
+    offset += salt_len;
 
     /*std::vector iv(fileContents.begin(), fileContents.begin() + iv_len);*/
-    std::vector iv(fileContents.begin() + salt.size(), fileContents.begin() + salt.size() + iv_len);
+    /*std::vector iv(fileContents.begin() + salt.size(), fileContents.begin() + salt.size() + iv_len);*/
+    std::vector iv(fileContents.begin() + offset, fileContents.begin() + offset + iv_len);
+    offset += iv_len;
 
+    /*std::vector tag(fileContents.end() - tag_len, fileContents.end());*/
     std::vector tag(fileContents.end() - tag_len, fileContents.end());
 
-    int ciphertext_len = fileContents.size() - salt.size() - iv_len - tag_len;
+    /*int ciphertext_len = fileContents.size() - salt.size() - iv_len - tag_len;*/
+    int ciphertext_len = fileContents.size() - offset - tag_len;
     std::vector ciphertext(
-        fileContents.begin() + salt.size() + iv_len,
-        fileContents.begin() + salt.size() + iv_len + ciphertext_len
+        /*fileContents.begin() + salt.size() + iv_len,
+        fileContents.begin() + salt.size() + iv_len + ciphertext_len*/
+        fileContents.begin() + offset,
+        fileContents.begin() + offset + ciphertext_len
     );
 
     /*auto keyRes = hashAndSalt(userInput.password);*/
