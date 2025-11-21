@@ -13,7 +13,7 @@ add_executable(SimpleCryptograph main.cpp
         ArgumentHandler/ArgsHandler.h
         FileHandling/FileHandler.cpp
         FileHandling/FileHandler.h
-        POD/File.h
+        POD/UserInput.h
         commands/CommandTypes.h
         commands/Commands.cpp
         commands/Commands.h
@@ -29,19 +29,20 @@ add_executable(SimpleCryptograph main.cpp
         Builder/Builder.h
         SimpleCrypt.cpp
         SimpleCrypt.h
-        AesGcmEncryptor/AesGcmCipher.cpp
-        AesGcmEncryptor/AesGcmCipher.h
-        AesGcmEncryptor/IEncrypt.h
-        Service/EncryptionService.cpp
-        Service/EncryptionService.h
-        KdfDigester/KdfDigester.cpp
-        KdfDigester/KdfDigester.h
-        KdfDigester/IKdfDigester.h
-        Service/DigesterService.cpp
-        Service/DigesterService.h
-        AesGcmEncryptor/IDecrypt.h
-        Service/DecryptService.cpp
-        Service/DecryptService.h
+        Cryptography/AesGcmEncryptor/AesGcmCipher.cpp
+        Cryptography/AesGcmEncryptor/AesGcmCipher.h
+        Cryptography/AesGcmEncryptor/IEncrypt.h
+        Cryptography/CryptographyServices/EncryptionService/EncryptionService.cpp
+        Cryptography/CryptographyServices/EncryptionService/EncryptionService.h
+        Cryptography/KdfDigester/KdfDigester.cpp
+        Cryptography/KdfDigester/KdfDigester.h
+        Cryptography/KdfDigester/IKdfDigester.h
+        Cryptography/CryptographyServices/HashingService/DigesterService.cpp
+        Cryptography/CryptographyServices/HashingService/DigesterService.h
+        Cryptography/AesGcmEncryptor/IDecrypt.h
+        Cryptography/CryptographyServices/DecryptionService/DecryptionService.cpp
+        Cryptography/CryptographyServices/DecryptionService/DecryptionService.h
+        Cryptography/CryptographyServices/DigestPOD.h
 )
 
 target_link_libraries(SimpleCryptograph PRIVATE OpenSSL::SSL OpenSSL::Crypto)
@@ -75,24 +76,24 @@ add_executable(SimpleCryptographTests Tests/test.cpp
         commands/CommandTypes.h
         commands/Commands.cpp
         commands/Commands.h
-        AesGcmEncryptor/AesGcmCipher.cpp
-        AesGcmEncryptor/AesGcmCipher.h
-        AesGcmEncryptor/IEncrypt.h
-        Service/EncryptionService.cpp
-        Service/EncryptionService.h
-        KdfDigester/KdfDigester.cpp
-        KdfDigester/KdfDigester.h
-        KdfDigester/IKdfDigester.h
-        Service/DigesterService.cpp
-        Service/DigesterService.h
-        Service/DecryptService.cpp
-        Service/DecryptService.h
+        Cryptography/AesGcmEncryptor/AesGcmCipher.cpp
+        Cryptography/AesGcmEncryptor/AesGcmCipher.h
+        Cryptography/AesGcmEncryptor/IEncrypt.h
+        Cryptography/CryptographyServices/EncryptionService/EncryptionService.cpp
+        Cryptography/CryptographyServices/EncryptionService/EncryptionService.h
+        Cryptography/KdfDigester/KdfDigester.cpp
+        Cryptography/KdfDigester/KdfDigester.h
+        Cryptography/KdfDigester/IKdfDigester.h
+        Cryptography/CryptographyServices/HashingService/DigesterService.cpp
+        Cryptography/CryptographyServices/HashingService/DigesterService.h
+        Cryptography/CryptographyServices/DecryptionService/DecryptionService.cpp
+        Cryptography/CryptographyServices/DecryptionService/DecryptionService.h
 )
 
 target_link_libraries(SimpleCryptographTests PRIVATE
-    Catch2::Catch2WithMain
-    OpenSSL::SSL
-    OpenSSL::Crypto
+        Catch2::Catch2WithMain
+        OpenSSL::SSL
+        OpenSSL::Crypto
 )
 
 include(CTest)
