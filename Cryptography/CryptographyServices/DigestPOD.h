@@ -1,8 +1,7 @@
-﻿//
-// Created by Frach on 21/11/2025.
-//
+﻿#pragma once
+#include <vector>
 
-#ifndef SIMPLECRYPTOGRAPH_DIGESTPOD_H
-#define SIMPLECRYPTOGRAPH_DIGESTPOD_H
-
-#endif //SIMPLECRYPTOGRAPH_DIGESTPOD_H
+struct DigestResult {
+    std::vector<unsigned char> key;
+    std::vector<unsigned char> salt;
+};

@@ -1,4 +1,4 @@
-﻿#include "../EncryptionService.h"
+﻿#include "EncryptionService.h"
 
 
 #include "../../../Data/UI/ErrorText.h"
@@ -13,13 +13,16 @@ EncryptionService::EncryptionService(IEncrypt &encryptor,
 }
 
 bool EncryptionService::EncryptFile(const std::string &filename, const std::string &password) {
-
     _logger.log(LogLevel::INFO, std::string(EncryptionOutput::logEncryptStart));
 
     const auto plaintext = _fileHandler.readFromFile(filename);
     std::vector<unsigned char> iv, ciphertext, tag;
 
-    const auto [salt, key] = _digesterService.Digest(password);
+    const auto result = _digesterService.Digest(password);
+
+    const auto &key = result.key;
+    const auto &salt = result.salt;
+
     if (salt.empty() || key.empty()) {
         _logger.log(LogLevel::ERROR, "Failed to hash password");
         return false;
@@ -47,5 +50,6 @@ bool EncryptionService::EncryptFile(const std::string &filename, const std::stri
     out.insert(out.end(), tag.begin(), tag.end());
 
     _fileHandler.writeToFile(filename, out);
+    RenderCmd::WriteOut(EncryptionOutput::encryptSuccess);
     return true;
 }

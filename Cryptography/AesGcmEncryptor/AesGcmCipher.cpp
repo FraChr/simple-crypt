@@ -14,7 +14,6 @@ bool AesGcmCipher::encrypt(
     std::vector<unsigned char> &iv,
     std::vector<unsigned char> &ciphertext,
     std::vector<unsigned char> &tag) const {
-
     int len, final_len = 0;
 
     EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
@@ -73,7 +72,6 @@ bool AesGcmCipher::decrypt(
     std::vector<unsigned char> &iv,
     std::vector<unsigned char> &tag,
     std::vector<unsigned char> &plaintext) const {
-
     int len = 0, final_len = 0;
 
     const EVP_CIPHER *cipher = EVP_aes_256_gcm();

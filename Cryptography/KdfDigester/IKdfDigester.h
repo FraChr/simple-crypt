@@ -5,11 +5,12 @@
 class IKdfDigester {
 public:
     virtual ~IKdfDigester() = default;
+
     virtual bool DeriveKey(
-       const std::string &password,
-       std::vector<unsigned char> &salt,
-       std::vector<unsigned char> &key
-       ) = 0;
+        const std::string &password,
+        std::vector<unsigned char> &salt,
+        std::vector<unsigned char> &key
+    ) = 0;
 
     /*virtual bool VerifyDigest(
         std::string &password,

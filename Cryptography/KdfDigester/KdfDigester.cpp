@@ -7,13 +7,13 @@
 #include <openssl/types.h>
 
 KdfDigester::KdfDigester(const unsigned int &iterations)
-    : _iterations(iterations) {}
+    : _iterations(iterations) {
+}
 
 bool KdfDigester::DeriveKey(
     const std::string &password,
     std::vector<unsigned char> &salt,
     std::vector<unsigned char> &key) {
-
     EVP_KDF *kdf = nullptr;
     EVP_KDF_CTX *kctx = nullptr;
     OSSL_PARAM params[5], *p = params;

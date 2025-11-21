@@ -1,50 +1,52 @@
-﻿#include "../HashingServices/DigesterService.h"
+﻿#include "../HashingService/DigesterService.h"
 
 #include <openssl/rand.h>
 
-DigesterService::DigesterService(IKdfDigester &kdfDigester, ILogger &logger)
-    : _kdfDigester(kdfDigester), _logger(logger) {}
+#include "../DigestPOD.h"
 
-std::pair<std::vector<unsigned char>, std::vector<unsigned char>> DigesterService::Digest(const std::string &password) {
+DigesterService::DigesterService(IKdfDigester &kdfDigester, ILogger &logger)
+    : _kdfDigester(kdfDigester), _logger(logger) {
+}
+
+
+/*TODO set a better error handling then returning empty*/
+DigestResult DigesterService::Digest(const std::string &password) {
     _logger.log(LogLevel::INFO, "starting Hash and Salting method");
 
-    std::vector<unsigned char> salt(16);
-    /*unsigned int iter = 80000;*/
-    std::vector<unsigned char> key(32);
+    std::vector<unsigned char> salt(_saltLength);
+    std::vector<unsigned char> key(_keyLength);
 
-    if(RAND_bytes(salt.data(), 16) != 1) {
+    if (RAND_bytes(salt.data(), _saltLength) != 1) {
         _logger.log(LogLevel::ERROR, "Failed to generate salt");
-        return {{},{}};
+        return {{}, {}};
     };
 
-    /*auto result = kdf_passwd(password, salt, iter, key);*/
-    auto result = _kdfDigester.DeriveKey(password, salt, key);
+    const auto result = _kdfDigester.DeriveKey(password, salt, key);
 
     if (!result) {
         _logger.log(LogLevel::ERROR, "Something went Wrong in hashAndSalt");
-        return {{},{}};
+        return {{}, {}};
     }
-    return {salt, key};
+
+    return DigestResult{
+        .key = key,
+        .salt = salt
+    };
 }
 
 bool DigesterService::VerifyDigest(
     const std::string &password,
     std::vector<unsigned char> &salt,
-    std::vector<unsigned char> &key) {
-
+    std::vector<unsigned char> &key
+) {
     if (salt.empty()) {
         _logger.log(LogLevel::ERROR, "Salt is empty");
         return {};
     }
 
     _logger.log(LogLevel::INFO, "Verifying pwd");
-    /*std::vector<unsigned char> salt(16);*/
-    /*unsigned int iter = 80000;*/
-    /*std::vector<unsigned char> key(32);*/
 
-    /*salt = saltFromDoc;*/
-
-    auto result = _kdfDigester.DeriveKey(password, salt, key);
+    const auto result = _kdfDigester.DeriveKey(password, salt, key);
 
     if (!result) {
         _logger.log(LogLevel::ERROR, "Something went Wrong in hashAndSalt");
@@ -52,5 +54,4 @@ bool DigesterService::VerifyDigest(
     }
 
     return true;
-    /*return key;*/
 }

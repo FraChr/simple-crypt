@@ -6,7 +6,9 @@
 
 class EncryptionService {
 public:
-    EncryptionService(IEncrypt &encryptor, DigesterService &digesterService, IFileHandler &fileHandler, ILogger &logger);
+    EncryptionService(IEncrypt &encryptor, DigesterService &digesterService, IFileHandler &fileHandler,
+                      ILogger &logger);
+
     bool EncryptFile(const std::string &filename, const std::string &password);
 
 private:
