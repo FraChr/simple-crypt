@@ -11,7 +11,7 @@ struct FileError {
 struct EncryptDecryptError {
     static constexpr std::string_view encryptionFailure = "Encryption failed\n";
     static constexpr std::string_view logEncryptionFailure = "Encryption failed";
-    static constexpr std::string_view decryptionFailure = "Decryption failed\n";
+    static constexpr std::string_view decryptionFailure = "\nDecryption failed\n";
     static constexpr std::string_view logDecryptionFailure = "Decryption failed";
     static constexpr std::string_view notValidOrCorrupt = "Not a walid file or file is Corrupt\n";
 };
