@@ -4,7 +4,7 @@
 #include <map>
 #include "../Data/UI/ErrorText.h"
 #include "../Data/UI/UiText.h"
-#include "../POD/File.h"
+#include "../POD/UserInput.h"
 #include "../commands/Commands.h"
 #include "../Render/RenderCmd.h"
 
@@ -33,7 +33,7 @@ void ArgsHandler::Handle(const int &argc, char *argv[]) {
     }
 }
 
-std::map<ArgsHandler::Option, std::function<void(const char *)>> ArgsHandler::CreateHandlers(
+std::map<ArgsHandler::Option, std::function<void(const char *)> > ArgsHandler::CreateHandlers(
     CommandType &ct, userInput &userInput) {
     std::map<Option, std::function<void(const char *)> > handlers;
 
