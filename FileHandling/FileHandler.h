@@ -18,8 +18,10 @@ private:
     bool fileIsOpenCheck(const T &file);
 
     void progressPercent(std::streamsize totalProcessed, std::streamsize totalFileSize, std::string prompt);
+
     void resetPreviousPercent() {
         _previousPercent = 0;
     }
+
     unsigned int _previousPercent = 0;
 };

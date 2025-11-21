@@ -70,8 +70,7 @@ bool FileHandler::fileExists(const std::string &filename) {
 void FileHandler::progressPercent(
     const std::streamsize totalProcessed,
     const std::streamsize totalFileSize,
-    std::string prompt)
-{
+    std::string prompt) {
     unsigned int percentProcessed = totalProcessed * 100 / totalFileSize;
 
 
@@ -90,5 +89,3 @@ bool FileHandler::fileIsOpenCheck(const T &file) {
     }
     return false;
 }
-
-
