@@ -6,7 +6,7 @@ class IKdfDigester {
 public:
     virtual ~IKdfDigester() = default;
     virtual bool DeriveKey(
-       std::string &password,
+       const std::string &password,
        std::vector<unsigned char> &salt,
        std::vector<unsigned char> &key
        ) = 0;

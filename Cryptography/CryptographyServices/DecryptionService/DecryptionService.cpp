@@ -1,12 +1,14 @@
-﻿#include "DecryptService.h"
-#include "../Data/UI/ErrorText.h"
-#include "../Data/UI/UiText.h"
+﻿#include "../DecryptionService.h"
+#include "../../../Data/UI/ErrorText.h"
+#include "../../../Data/UI/UiText.h"
+#include "../../../Render/RenderCmd.h"
 
-DecryptService::DecryptService(IDecrypt &decryptor, DigesterService &digesterService, IFileHandler &file,
-    ILogger &logger) : _decryptor(decryptor), _fileHandler(file), _logger(logger), _digesterService(digesterService)
+
+DecryptionService::DecryptionService(IDecrypt &decryptor, DigesterService &digesterService, IFileHandler &file,
+                                     ILogger &logger) : _decryptor(decryptor), _fileHandler(file), _logger(logger), _digesterService(digesterService)
 {}
 
-bool DecryptService::DecryptFile(userInput &input) {
+bool DecryptionService::DecryptFile(const std::string &filename, const std::string &password) {
     /*const EVP_CIPHER *cipher = EVP_aes_256_gcm();*/
     /*const int iv_len = EVP_CIPHER_iv_length(cipher);
     const int tag_len = 16;
@@ -17,7 +19,7 @@ bool DecryptService::DecryptFile(userInput &input) {
 
 
 
-    auto fileContents = _fileHandler.readFromFile(input.filename);
+    auto fileContents = _fileHandler.readFromFile(filename);
 
     const int salt_len = fileContents[0];
     const int iv_len = fileContents[1];
@@ -40,8 +42,7 @@ bool DecryptService::DecryptFile(userInput &input) {
     std::vector tag(fileContents.end() - tag_len, fileContents.end());
 
     int ciphertext_len = fileContents.size() - offset - tag_len;
-    std::vector ciphertext(
-
+    const std::vector<unsigned char> ciphertext(
         fileContents.begin() + offset,
         fileContents.begin() + offset + ciphertext_len
     );
@@ -49,9 +50,9 @@ bool DecryptService::DecryptFile(userInput &input) {
     /*auto key2 = VerifyPwd(salt, userInput.password);*/
 
     std::vector<unsigned char> key(32);
-    auto resVerifyKey = _digesterService.VerifyDigest(input.password, salt, key);
+    const auto verifyKey = _digesterService.VerifyDigest(password, salt, key);
 
-    if (!resVerifyKey) {
+    if (!verifyKey) {
         _logger.log(LogLevel::ERROR, "Failed to verify key");
         return false;
     }
@@ -59,10 +60,10 @@ bool DecryptService::DecryptFile(userInput &input) {
     std::vector<unsigned char> plaintext(ciphertext_len);
     int plaintext_len = 0;
 
-    auto ok = _decryptor.decrypt(ciphertext, key, iv, tag, plaintext);
+    const auto ok = _decryptor.decrypt(ciphertext, key, iv, tag, plaintext);
 
     if (!ok) {
-        /*RenderCmd::WriteError(EncryptDecryptError::logDecryptionFailure);*/
+        RenderCmd::WriteError(EncryptDecryptError::decryptionFailure);
         _logger.log(LogLevel::ERROR,EncryptDecryptError::logDecryptionFailure.data());
 
         return false;
@@ -74,10 +75,10 @@ bool DecryptService::DecryptFile(userInput &input) {
 
     _fileHandler.writeToFile(input.filename, out);*/
 
-    _fileHandler.writeToFile(input.filename, plaintext);
+    _fileHandler.writeToFile(filename, plaintext);
 
 
     /*RenderCmd::WriteOut(DecryptionOutput::decryptSuccess);*/
-    _logger.log(LogLevel::INFO, std::string(DecryptionOutput::decryptSuccess));
+    _logger.log(LogLevel::INFO, std::string(DecryptionOutput::logDecryptDone));
     return true;
 }

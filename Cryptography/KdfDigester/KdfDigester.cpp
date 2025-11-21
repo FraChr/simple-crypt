@@ -10,7 +10,7 @@ KdfDigester::KdfDigester(const unsigned int &iterations)
     : _iterations(iterations) {}
 
 bool KdfDigester::DeriveKey(
-    std::string &password,
+    const std::string &password,
     std::vector<unsigned char> &salt,
     std::vector<unsigned char> &key) {
 
@@ -45,9 +45,10 @@ bool KdfDigester::DeriveKey(
     }
 
     std::string hashAlgorithm = "SHA256";
+    std::string passwordCopy = password;
 
     /* Set Password */
-    *p++ = OSSL_PARAM_construct_octet_string(OSSL_KDF_PARAM_PASSWORD, password.data(), password.size());
+    *p++ = OSSL_PARAM_construct_octet_string(OSSL_KDF_PARAM_PASSWORD, passwordCopy.data(), password.size());
     /* Set Salt */
     *p++ = OSSL_PARAM_construct_octet_string(OSSL_KDF_PARAM_SALT, salt.data(), salt.size());
     /* Set iteration count (default 2048) */
@@ -65,7 +66,6 @@ bool KdfDigester::DeriveKey(
         EVP_KDF_CTX_free(kctx);
         return false;
     }
-
 
     EVP_KDF_CTX_free(kctx);
     EVP_KDF_free(kdf);

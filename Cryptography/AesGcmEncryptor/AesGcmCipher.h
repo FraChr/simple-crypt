@@ -2,9 +2,9 @@
 
 #include "IDecrypt.h"
 #include "IEncrypt.h"
-#include "../Interfaces/IFileHandler.h"
-#include "../Interfaces/ILogger.h"
-#include "../POD/File.h"
+#include "../../Interfaces/IFileHandler.h"
+#include "../../Interfaces/ILogger.h"
+#include "../../POD/File.h"
 
 class AesGcmCipher : public IEncrypt, public IDecrypt{
 public:

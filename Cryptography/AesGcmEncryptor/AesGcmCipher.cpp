@@ -3,14 +3,11 @@
 #include <openssl/evp.h>
 #include <openssl/rand.h>
 
-#include "../Data/UI/ErrorText.h"
-#include "../Data/UI/UiText.h"
-#include "../Logger/Logger.h"
-#include "../Render/RenderCmd.h"
-#include <openssl/types.h>
+#include "../../Data/UI/ErrorText.h"
+#include "../../Data/UI/UiText.h"
+#include "../../Logger/Logger.h"
 
-
-
+/*TODO encrypt in intervals of a fixed size bit size e.g 4kb*/
 bool AesGcmCipher::encrypt(
     const std::vector<unsigned char> &plaintext,
     const std::vector<unsigned char> &key,
@@ -68,6 +65,8 @@ bool AesGcmCipher::encrypt(
     return true;
 }
 
+/*TODO decrypt in intervals of a fixed size bit size e.g 4kb*/
+
 bool AesGcmCipher::decrypt(
     const std::vector<unsigned char> &ciphertext,
     const std::vector<unsigned char> &key,
@@ -75,7 +74,6 @@ bool AesGcmCipher::decrypt(
     std::vector<unsigned char> &tag,
     std::vector<unsigned char> &plaintext) const {
 
-    /*_logger.log(LogLevel::INFO, std::string(DecryptionOutput::logDecryptCurrent));*/
     int len = 0, final_len = 0;
 
     const EVP_CIPHER *cipher = EVP_aes_256_gcm();
@@ -83,33 +81,35 @@ bool AesGcmCipher::decrypt(
     EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
     if (!ctx) {
         /*HandleError();*/
+        EVP_CIPHER_CTX_free(ctx);
         return false;
     }
 
     if (EVP_DecryptInit_ex(ctx, cipher, nullptr, key.data(), iv.data()) != 1) {
         /*HandleError(ctx);*/
+        EVP_CIPHER_CTX_free(ctx);
         return false;
     }
 
     if (EVP_DecryptUpdate(ctx, plaintext.data(), &len, ciphertext.data(), ciphertext.size()) != 1) {
         /*HandleError(ctx);*/
+        EVP_CIPHER_CTX_free(ctx);
         return false;
     }
-    /*plaintext_len = len;*/
 
     if (EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_TAG, 16, tag.data()) != 1) {
         /*HandleError(ctx);*/
+        EVP_CIPHER_CTX_free(ctx);
         return false;
     }
 
     if (EVP_DecryptFinal(ctx, plaintext.data() + len, &final_len) != 1) {
         /*HandleError(ctx);*/
+        EVP_CIPHER_CTX_free(ctx);
         return false;
     }
     plaintext.resize(len + final_len);
-    /*plaintext_len = len + final_len;*/
 
-    /*_logger.log(LogLevel::INFO, std::string(DecryptionOutput::logDecryptDone));*/
     EVP_CIPHER_CTX_free(ctx);
     return true;
 }

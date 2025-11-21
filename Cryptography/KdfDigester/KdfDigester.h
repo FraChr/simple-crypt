@@ -8,7 +8,7 @@ class KdfDigester : public IKdfDigester {
 public:
     KdfDigester(const unsigned int &iterations = 2048);
     bool DeriveKey(
-        std::string &password,
+        const std::string &password,
         std::vector<unsigned char> &salt,
         std::vector<unsigned char> &key
         ) override;

@@ -1,11 +1,11 @@
-﻿#include "DigesterService.h"
+﻿#include "../HashingServices/DigesterService.h"
 
 #include <openssl/rand.h>
 
 DigesterService::DigesterService(IKdfDigester &kdfDigester, ILogger &logger)
     : _kdfDigester(kdfDigester), _logger(logger) {}
 
-std::pair<std::vector<unsigned char>, std::vector<unsigned char>> DigesterService::Digest(std::string &password) {
+std::pair<std::vector<unsigned char>, std::vector<unsigned char>> DigesterService::Digest(const std::string &password) {
     _logger.log(LogLevel::INFO, "starting Hash and Salting method");
 
     std::vector<unsigned char> salt(16);
@@ -28,7 +28,7 @@ std::pair<std::vector<unsigned char>, std::vector<unsigned char>> DigesterServic
 }
 
 bool DigesterService::VerifyDigest(
-    std::string &password,
+    const std::string &password,
     std::vector<unsigned char> &salt,
     std::vector<unsigned char> &key) {
 

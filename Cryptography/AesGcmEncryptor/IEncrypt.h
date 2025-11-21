@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "../POD/File.h"
+#include "../../POD/File.h"
 
 class IEncrypt {
     public:

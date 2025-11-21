@@ -1,13 +1,13 @@
 ﻿#pragma once
-#include "DigesterService.h"
-#include "../AesGcmEncryptor/IEncrypt.h"
-#include "../Interfaces/IFileHandler.h"
-#include "../Interfaces/ILogger.h"
+#include "../HashingService/DigesterService.h"
+#include "../../AesGcmEncryptor/IEncrypt.h"
+#include "../../../Interfaces/IFileHandler.h"
+#include "../../../Interfaces/ILogger.h"
 
 class EncryptionService {
 public:
     EncryptionService(IEncrypt &encryptor, DigesterService &digesterService, IFileHandler &fileHandler, ILogger &logger);
-    bool EncryptFile(userInput &input);
+    bool EncryptFile(const std::string &filename, const std::string &password);
 
 private:
     IEncrypt &_encryptor;
