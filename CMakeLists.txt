@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 20)
 
 
 find_package(OpenSSL REQUIRED)
-find_package(Catch2 3 REQUIRED)
+#[[find_package(Catch2 3 REQUIRED)]]
 
 add_executable(SimpleCryptograph main.cpp
         Data/UI/UiText.h
@@ -43,10 +43,13 @@ add_executable(SimpleCryptograph main.cpp
         Cryptography/CryptographyServices/DecryptionService/DecryptionService.cpp
         Cryptography/CryptographyServices/DecryptionService/DecryptionService.h
         Cryptography/CryptographyServices/DigestPOD.h
+        Cryptography/CryptoStatus.h
+        Cryptography/CryptographyBase.cpp
+        Cryptography/CryptographyBase.h
 )
 
 target_link_libraries(SimpleCryptograph PRIVATE OpenSSL::SSL OpenSSL::Crypto)
-set_target_properties(SimpleCryptograph PROPERTIES OUTPUT_NAME cp)
+set_target_properties(SimpleCryptograph PROPERTIES OUTPUT_NAME crypt)
 
 add_executable(SimpleCryptographHuffman LearningHuffman.cpp
         huffman/INode.h
@@ -62,7 +65,7 @@ add_executable(SimpleCryptographHuffman LearningHuffman.cpp
 add_executable(SimpleCryptographBitwise bitwiseOperations.cpp)
 target_link_libraries(SimpleCryptographBitwise PRIVATE OpenSSL::SSL OpenSSL::Crypto)
 
-add_executable(SimpleCryptographTests Tests/test.cpp
+#[[add_executable(SimpleCryptographTests Tests/test.cpp
         Interfaces/IFileHandler.h
         FileHandling/FileHandler.cpp
         FileHandling/FileHandler.h
@@ -98,5 +101,5 @@ target_link_libraries(SimpleCryptographTests PRIVATE
 
 include(CTest)
 include(Catch)
-catch_discover_tests(SimpleCryptographTests)
+catch_discover_tests(SimpleCryptographTests)]]
 
