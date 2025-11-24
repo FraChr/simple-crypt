@@ -5,7 +5,6 @@
 #include "../FileHandling/FileHandler.h"
 #include "../POD/UserInput.h"
 #include "../Data/UI/UiText.h"
-#include "../Cryptography/AesGcmEncryptor/AesGcmCipher.h"
 #include "../Render/RenderCmd.h"
 
 

@@ -3,7 +3,7 @@
 #include <string>
 #include "../Interfaces/IFileHandler.h"
 #include "../Interfaces/ILogger.h"
-#include "../POD/File.h"
+#include "../POD/UserInput.h"
 
 class MockFileHandler final : public IFileHandler {
 public:
@@ -19,22 +19,24 @@ public:
         writtenFile = filename;
         writtenData = std::string(value.begin(), value.end());
     }
+
     bool fileExists(const std::string &filename) override {
         return true;
     }
+
     std::vector<unsigned char> readFromFile(const std::string &filename) override {
-        return{};
+        return {};
     };
 };
 
 class MockLogger final : public ILogger {
-    public:
+public:
     void log(LogLevel level, const std::string &message) {
         std::cout << "Error Level: " << message << '\n';
     }
 };
 
-struct MockUserInput : userInput{
+struct MockUserInput : userInput {
     std::string filename = "testData.txt";
     std::string password = "test";
 };

@@ -52,10 +52,10 @@ bool DecryptionService::DecryptFile(const std::string &filename, const std::stri
 
     const auto ok = _decryptor.decrypt(ciphertext, key, iv, tag, plaintext);
 
-    if (!ok) {
+    if (!ok.result) {
         RenderCmd::WriteError(EncryptDecryptError::decryptionFailure);
         _logger.log(LogLevel::ERROR, EncryptDecryptError::logDecryptionFailure.data());
-
+        _logger.log(LogLevel::ERROR, ok.errorMessage);
         return false;
     }
 
