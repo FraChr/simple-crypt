@@ -1,14 +1,16 @@
 ﻿#pragma once
 
+#include <openssl/types.h>
+
 #include "IDecrypt.h"
 #include "IEncrypt.h"
+#include "../CryptographyBase.h"
+#include "../CryptoStatus.h"
 #include "../../Interfaces/IFileHandler.h"
-#include "../../Interfaces/ILogger.h"
-#include "../../POD/UserInput.h"
 
-class AesGcmCipher : public IEncrypt, public IDecrypt {
+class AesGcmCipher : public IEncrypt, public IDecrypt, public CryptographyBase {
 public:
-    bool encrypt(
+    CryptoStatus encrypt(
         const std::vector<unsigned char> &plaintext,
         const std::vector<unsigned char> &key,
         std::vector<unsigned char> &iv,
@@ -16,11 +18,15 @@ public:
         std::vector<unsigned char> &tag
     ) const override;
 
-    bool decrypt(
+    CryptoStatus decrypt(
         const std::vector<unsigned char> &ciphertext,
         const std::vector<unsigned char> &key,
         std::vector<unsigned char> &iv,
         std::vector<unsigned char> &tag,
         std::vector<unsigned char> &plaintext
     ) const override;
+
+private:
+    void Clean(EVP_CIPHER_CTX *ctx) const;
+    int _tagSize = 16;
 };

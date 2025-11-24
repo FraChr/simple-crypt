@@ -21,10 +21,11 @@ DigestResult DigesterService::Digest(const std::string &password) {
         return {{}, {}};
     };
 
-    const auto result = _kdfDigester.DeriveKey(password, salt, key);
+    const auto ok = _kdfDigester.DeriveKey(password, salt, key);
 
-    if (!result) {
+    if (!ok.result) {
         _logger.log(LogLevel::ERROR, "Something went Wrong in hashAndSalt");
+        _logger.log(LogLevel::ERROR, ok.errorMessage);
         return {{}, {}};
     }
 
@@ -46,10 +47,11 @@ bool DigesterService::VerifyDigest(
 
     _logger.log(LogLevel::INFO, "Verifying pwd");
 
-    const auto result = _kdfDigester.DeriveKey(password, salt, key);
+    const auto ok = _kdfDigester.DeriveKey(password, salt, key);
 
-    if (!result) {
+    if (!ok.result) {
         _logger.log(LogLevel::ERROR, "Something went Wrong in hashAndSalt");
+        _logger.log(LogLevel::ERROR, ok.errorMessage);
         return {};
     }
 

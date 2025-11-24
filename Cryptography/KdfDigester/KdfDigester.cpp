@@ -4,13 +4,12 @@
 #include <openssl/crypto.h>
 #include <openssl/kdf.h>
 #include <openssl/params.h>
-#include <openssl/types.h>
 
 KdfDigester::KdfDigester(const unsigned int &iterations)
     : _iterations(iterations) {
 }
 
-bool KdfDigester::DeriveKey(
+CryptoStatus KdfDigester::DeriveKey(
     const std::string &password,
     std::vector<unsigned char> &salt,
     std::vector<unsigned char> &key) {
@@ -19,29 +18,20 @@ bool KdfDigester::DeriveKey(
     OSSL_PARAM params[5], *p = params;
     OSSL_LIB_CTX *lib_ctx = nullptr;
 
-    /*_logger.log(LogLevel::INFO, "kdf_passwd method");*/
-
     lib_ctx = OSSL_LIB_CTX_new();
     if (!lib_ctx) {
-        /*HandleError();*/
-        OSSL_LIB_CTX_free(lib_ctx);
-        return false;
+        Clean(kdf, kctx, lib_ctx);
+        return {.result = false, .errorMessage = HandleError()};
     }
     kdf = EVP_KDF_fetch(lib_ctx, "PBKDF2", nullptr);
     if (!kdf) {
-        /*HandleError(kdf, kctx, lib_ctx);*/
-        OSSL_LIB_CTX_free(lib_ctx);
-        EVP_KDF_free(kdf);
-
-        return false;
+        Clean(kdf, kctx, lib_ctx);
+        return {.result = false, .errorMessage = HandleError()};
     }
     kctx = EVP_KDF_CTX_new(kdf);
     if (!kctx) {
-        /*HandleError(kdf, kctx, lib_ctx);*/
-        OSSL_LIB_CTX_free(lib_ctx);
-        EVP_KDF_free(kdf);
-        EVP_KDF_CTX_free(kctx);
-        return false;
+        Clean(kdf, kctx, lib_ctx);
+        return {.result = false, .errorMessage = HandleError()};
     }
 
     std::string hashAlgorithm = "SHA256";
@@ -60,15 +50,16 @@ bool KdfDigester::DeriveKey(
 
     /* Derive the key */
     if (EVP_KDF_derive(kctx, key.data(), key.size(), params) != 1) {
-        /*HandleError(kdf, kctx, lib_ctx);*/
-        OSSL_LIB_CTX_free(lib_ctx);
-        EVP_KDF_free(kdf);
-        EVP_KDF_CTX_free(kctx);
-        return false;
+        Clean(kdf, kctx, lib_ctx);
+        return {.result = false, .errorMessage = HandleError()};
     }
 
-    EVP_KDF_CTX_free(kctx);
-    EVP_KDF_free(kdf);
-    OSSL_LIB_CTX_free(lib_ctx);
-    return true;
+    Clean(kdf, kctx, lib_ctx);
+    return {.result = true};
+}
+
+void KdfDigester::Clean(EVP_KDF *kdf, EVP_KDF_CTX *kctx, OSSL_LIB_CTX *lib_ctx) {
+    if (kdf) EVP_KDF_free(kdf);
+    if (kctx) EVP_KDF_CTX_free(kctx);
+    if (lib_ctx) OSSL_LIB_CTX_free(lib_ctx);
 }

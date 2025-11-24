@@ -43,10 +43,13 @@ add_executable(SimpleCryptograph main.cpp
         Cryptography/CryptographyServices/DecryptionService/DecryptionService.cpp
         Cryptography/CryptographyServices/DecryptionService/DecryptionService.h
         Cryptography/CryptographyServices/DigestPOD.h
+        Cryptography/CryptoStatus.h
+        Cryptography/CryptographyBase.cpp
+        Cryptography/CryptographyBase.h
 )
 
 target_link_libraries(SimpleCryptograph PRIVATE OpenSSL::SSL OpenSSL::Crypto)
-set_target_properties(SimpleCryptograph PROPERTIES OUTPUT_NAME cp)
+set_target_properties(SimpleCryptograph PROPERTIES OUTPUT_NAME crypt)
 
 add_executable(SimpleCryptographHuffman LearningHuffman.cpp
         huffman/INode.h

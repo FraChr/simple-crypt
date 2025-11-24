@@ -1,11 +1,13 @@
 ﻿#pragma once
 #include <vector>
 
+#include "../CryptoStatus.h"
+
 class IDecrypt {
 public:
     virtual ~IDecrypt() = default;
 
-    virtual bool decrypt(
+    virtual CryptoStatus decrypt(
         const std::vector<unsigned char> &ciphertext,
         const std::vector<unsigned char> &key,
         std::vector<unsigned char> &iv,

@@ -29,13 +29,13 @@ bool EncryptionService::EncryptFile(const std::string &filename, const std::stri
     }
 
 
-    const bool ok = _encryptor.encrypt(plaintext, key, iv, ciphertext, tag);
+    const auto ok = _encryptor.encrypt(plaintext, key, iv, ciphertext, tag);
 
 
-    if (!ok) {
+    if (!ok.result) {
         RenderCmd::WriteError(EncryptDecryptError::encryptionFailure);
         _logger.log(LogLevel::ERROR, std::string(EncryptDecryptError::logEncryptionFailure));
-
+        _logger.log(LogLevel::ERROR, ok.errorMessage);
         return false;
     }
 
