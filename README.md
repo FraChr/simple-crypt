@@ -66,6 +66,16 @@ git clone https://github.com/FraChr/simple-crypt.git
 cd simple-crypt
 ```
 
+Create a build directory:
+
+```
+mkdir build
+```
+
+```
+cd build
+```
+
 Run CMake to configure the build system:
 ```
 cmake ..
