@@ -66,16 +66,6 @@ git clone https://github.com/FraChr/simple-crypt.git
 cd simple-crypt
 ```
 
-Clone Repository:
-
-```
-git clone https://github.com/FraChr/simple-crypt.git
-```
-
-```
-cd simple-crypt
-```
-
 Run CMake to configure the build system:
 ```
 cmake ..
@@ -83,7 +73,7 @@ cmake ..
 
 makefile:
 ```
-pacman -S ninja
+pacman -S make
 ```
 ```
 make
@@ -91,7 +81,7 @@ make
 
 build.ninja:
 ```
-pacman -S make
+pacman -S ninja
 ```  
 ```
 ninja
