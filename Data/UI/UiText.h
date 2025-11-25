@@ -68,6 +68,6 @@ struct DecryptionOutput {
 };
 
 struct LoggerOutput {
-    static constexpr std::string_view logDirectoryCreated = "Successfully created log directory";
-    static constexpr std::string_view logDirectoryExist = "Directory already exist";
+    static constexpr std::string_view logDirectoryCreated = "\nSuccessfully created log directory\n";
+    static constexpr std::string_view logDirectoryExist = "\nDirectory already exist\n";
 };
