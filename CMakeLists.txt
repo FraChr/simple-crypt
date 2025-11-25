@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 20)
 
 
 find_package(OpenSSL REQUIRED)
-#[[find_package(Catch2 3 REQUIRED)]]
+
 
 add_executable(SimpleCryptograph main.cpp
         Data/UI/UiText.h
@@ -50,6 +50,13 @@ add_executable(SimpleCryptograph main.cpp
 
 target_link_libraries(SimpleCryptograph PRIVATE OpenSSL::SSL OpenSSL::Crypto)
 set_target_properties(SimpleCryptograph PROPERTIES OUTPUT_NAME crypt)
+
+option(BUILD_TESTS "Build tests" OFF)
+if(BUILD_TESTS)
+    find_package(Catch2 3 REQUIRED)
+    enable_testing()
+    add_subdirectory(Tests)
+endif ()
 
 #[[add_executable(SimpleCryptographHuffman LearningHuffman.cpp
         huffman/INode.h
