@@ -7,7 +7,6 @@
 #include "../Data/UI/UiText.h"
 #include "../Render/RenderCmd.h"
 
-
 Commands::Commands(
     IFileHandler &fileHandlerInstance,
     ILogger &loggerInstance,
@@ -20,6 +19,14 @@ Commands::Commands(
     commands[CRYPT] = [this](const userInput &userInput) { encrypt(userInput); };
     commands[DECRYPT] = [this](const userInput &userInput) { decrypt(userInput); };
     commands[COMPRESS] = [this](const userInput &userInput) { compress(userInput); };
+}
+
+void Commands::encrypt(const userInput &userInput) {
+    _encryptionService.EncryptFile(userInput.filename, userInput.password);
+}
+
+void Commands::decrypt(const userInput &userInput) {
+    _decryptionService.DecryptFile(userInput.filename, userInput.password);
 }
 
 /*
@@ -49,34 +56,3 @@ std::unordered_map<unsigned char, int> Commands::CountCharOccurrences(const std:
     }
     return occurrences;
 }
-
-void Commands::encrypt(const userInput &userInput) {
-    _encryptionService.EncryptFile(userInput.filename, userInput.password);
-}
-
-void Commands::decrypt(const userInput &userInput) {
-    _decryptionService.DecryptFile(userInput.filename, userInput.password);
-}
-
-
-/*void Commands::HandleError() const {
-char errBuffer[256];
-ERR_error_string(ERR_get_error(), errBuffer);
-_logger.log(LogLevel::ERROR, errBuffer);
-}
-
-void Commands::HandleError(EVP_CIPHER_CTX *ctx) const {
-HandleError();
-if (ctx) EVP_CIPHER_CTX_free(ctx);
-}
-
-void Commands::HandleError(EVP_MD_CTX *mctx) const {
-HandleError();
-if (mctx) EVP_MD_CTX_free(mctx);
-}
-void Commands::HandleError(EVP_KDF *kdf, EVP_KDF_CTX *kctx, OSSL_LIB_CTX *lib_ctx) const {
-HandleError();
-if (kctx) EVP_KDF_CTX_free(kctx);
-if (kdf) EVP_KDF_free(kdf);
-if (lib_ctx) OSSL_LIB_CTX_free(lib_ctx);
-}*/
