@@ -12,14 +12,13 @@ ArgsHandler::ArgsHandler(ICommands &cmdInstance) : _commands(cmdInstance) {
 }
 
 void ArgsHandler::Handle(const int &argc, char *argv[]) {
-    std::string commandName;
     CommandType commandType{};
     userInput userInput;
-
+    constexpr int endOfParse = -1;
     auto handlers = CreateHandlers(commandType, userInput);
 
     int opt = 0;
-    while ((opt = getopt(argc, argv, options)) != -1) {
+    while ((opt = getopt(argc, argv, options)) != endOfParse) {
         auto op = static_cast<Option>(opt);
         if (handlers.contains(op))
             handlers[op](optarg);
@@ -36,7 +35,9 @@ void ArgsHandler::Handle(const int &argc, char *argv[]) {
 std::map<ArgsHandler::Option, std::function<void(const char *)> > ArgsHandler::CreateHandlers(
     CommandType &ct, userInput &userInput) {
     std::map<Option, std::function<void(const char *)> > handlers;
+    /*std::map<int, std::function<void(const char *)> > handlers;*/
 
+    /*handlers['h'] = [&](const char *) { RenderCmd::WriteOut(Support::help); };*/
     handlers[Option::ENCRYPT] = [&ct](const char *) { ct = CRYPT; };
     handlers[Option::HELP] = [&](const char *) { RenderCmd::WriteOut(Support::help); };
     handlers[Option::PASSWORD] = [&userInput](const char *arg) { userInput.password = optarg; };
