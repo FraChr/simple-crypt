@@ -45,6 +45,7 @@ bool DecryptionService::DecryptFile(const std::string &filename, const std::stri
 
     if (!verifyKey) {
         _logger.log(LogLevel::ERROR, "Failed to verify key");
+
         return false;
     }
 
