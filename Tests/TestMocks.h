@@ -1,6 +1,8 @@
 ﻿#pragma once
 #include <iostream>
 #include <string>
+
+#include "../Cryptography/CryptographyServices/EncryptionService/EncryptionService.h"
 #include "../Interfaces/IFileHandler.h"
 #include "../Interfaces/ILogger.h"
 #include "../POD/UserInput.h"
@@ -31,8 +33,11 @@ public:
 
 class MockLogger final : public ILogger {
 public:
+    const std::string RESET = "\033[0m";
+    const std::string CYAN = "\033[96m";
+
     void log(LogLevel level, const std::string &message) {
-        std::cout << "Error Level: " << message << '\n';
+        std::cout << CYAN << "\nMock Logger: " << message << RESET << '\n';
     }
 };
 
